@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "308145895908",
+    "project_id": "ttltmobile-coffeeapp",
+    "storage_bucket": "ttltmobile-coffeeapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:308145895908:android:1410d254a1afdea9dc2ff1",
+        "android_client_info": {
+          "package_name": "vn.edu.hcmuaf.fit.ttltmobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLDQJn-ZMGkgwPVH4Pjt87hNL3BowgzCA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

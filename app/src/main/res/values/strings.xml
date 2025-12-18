@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">TTLTMobile</string>
+    <string name="coffee_house">Coffee\n<font color="#F1953e">H</font>ouse</string>
+    <string name="get_started">Get Started</string>
+    <string name="coffee_house2">Coffee <font color="#F1953e">H</font>ouse</string>
+    <string name="search_anything">Search anything</string>
+    <string name="special_for_you">Special for you</string>
+    <string name="list">List</string>
+    <string name="description">Description</string>
+    <string name="coffee_size">Coffee Size</string>
+    <string name="price">Price</string>
+    <string name="_0">$0</string>
+    <string name="buy_now">Buy Now</string>
+</resources>

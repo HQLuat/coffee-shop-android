@@ -1,0 +1,6 @@
+package vn.edu.hcmuaf.fit.ttltmobile.domain
+
+data class CategoryModel (
+    val title: String = "",
+    val id: Int = 0
+)
