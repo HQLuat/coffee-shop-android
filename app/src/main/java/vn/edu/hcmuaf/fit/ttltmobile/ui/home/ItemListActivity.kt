@@ -1,17 +1,12 @@
-package vn.edu.hcmuaf.fit.ttltmobile.activity
+package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
-import vn.edu.hcmuaf.fit.ttltmobile.R
-import vn.edu.hcmuaf.fit.ttltmobile.adapter.PopularAdapter
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityItemListBinding
-import vn.edu.hcmuaf.fit.ttltmobile.viewmodel.MainViewModel
 
 class ItemListActivity : AppCompatActivity() {
     lateinit var binding: ActivityItemListBinding

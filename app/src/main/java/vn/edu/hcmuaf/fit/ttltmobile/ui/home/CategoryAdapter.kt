@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.adapter
+package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
 import android.content.Context
 import android.content.Intent
@@ -9,9 +9,8 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import vn.edu.hcmuaf.fit.ttltmobile.R
-import vn.edu.hcmuaf.fit.ttltmobile.activity.ItemListActivity
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ViewholderCategoryBinding
-import vn.edu.hcmuaf.fit.ttltmobile.domain.CategoryModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.CategoryModel
 
 class CategoryAdapter(val items: MutableList<CategoryModel>) :
     RecyclerView.Adapter<CategoryAdapter.Viewholder>() {
@@ -23,13 +22,13 @@ class CategoryAdapter(val items: MutableList<CategoryModel>) :
     class Viewholder(val binding: ViewholderCategoryBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryAdapter.Viewholder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Viewholder {
         context = parent.context
         val binding = ViewholderCategoryBinding.inflate(LayoutInflater.from(context), parent, false)
         return Viewholder(binding)
     }
 
-    override fun onBindViewHolder(holder: CategoryAdapter.Viewholder, position: Int) {
+    override fun onBindViewHolder(holder: Viewholder, position: Int) {
         val item = items[position]
         holder.binding.titleCat.text = item.title
 

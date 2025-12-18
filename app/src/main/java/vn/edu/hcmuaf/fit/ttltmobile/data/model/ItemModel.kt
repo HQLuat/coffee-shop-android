@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.domain
+package vn.edu.hcmuaf.fit.ttltmobile.data.model
 
 import java.io.Serializable
 

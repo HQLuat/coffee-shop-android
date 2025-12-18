@@ -1,11 +1,10 @@
-package vn.edu.hcmuaf.fit.ttltmobile.adapter
+package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ViewholderSizeBinding
 import android.content.Context
 import android.view.LayoutInflater
-import androidx.appcompat.app.ActionBar
 import vn.edu.hcmuaf.fit.ttltmobile.R
 
 class SizeAdapter (val items: MutableList<String>):
@@ -20,13 +19,13 @@ class SizeAdapter (val items: MutableList<String>):
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): SizeAdapter.Viewholder {
+    ): Viewholder {
        context = parent.context
         val binding = ViewholderSizeBinding.inflate(LayoutInflater.from(context), parent, false)
         return Viewholder(binding)
     }
 
-    override fun onBindViewHolder(holder: SizeAdapter.Viewholder, position: Int) {
+    override fun onBindViewHolder(holder: Viewholder, position: Int) {
         val imageSie = when(position) {
             0 -> 45.dpToPx(context)
             1 -> 50.dpToPx(context)

@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.adapter
+package vn.edu.hcmuaf.fit.ttltmobile.ui.cart
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,13 +8,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.request.RequestOptions
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ViewholderCartBinding
-import vn.edu.hcmuaf.fit.ttltmobile.domain.ItemModel
-import vn.edu.hcmuaf.fit.ttltmobile.helper.ChangeNumberItemsListener
-import vn.edu.hcmuaf.fit.ttltmobile.helper.ManagmentCart
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
+import vn.edu.hcmuaf.fit.ttltmobile.utils.ChangeNumberItemsListener
+import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
 
 class CartAdapter (private val listItemSelected: ArrayList<ItemModel>,
-    context: Context,
-    val changeNumberItemsListener: ChangeNumberItemsListener?=null):
+                   context: Context,
+                   val changeNumberItemsListener: ChangeNumberItemsListener?=null):
 RecyclerView.Adapter<CartAdapter.Viewholder>(){
     class Viewholder(val binding: ViewholderCartBinding):
         RecyclerView.ViewHolder(binding.root)
@@ -24,12 +24,12 @@ RecyclerView.Adapter<CartAdapter.Viewholder>(){
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): CartAdapter.Viewholder {
+    ): Viewholder {
         val binding = ViewholderCartBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     return Viewholder(binding)
     }
 
-    override fun onBindViewHolder(holder: CartAdapter.Viewholder, position: Int) {
+    override fun onBindViewHolder(holder: Viewholder, position: Int) {
         val item = listItemSelected[position]
 
         holder.binding.titleTxt.text = item.title

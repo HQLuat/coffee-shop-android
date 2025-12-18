@@ -1,10 +1,11 @@
-package vn.edu.hcmuaf.fit.ttltmobile.activity
+package vn.edu.hcmuaf.fit.ttltmobile.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivitySplashBinding
+import vn.edu.hcmuaf.fit.ttltmobile.ui.home.MainActivity
 
 class SplashActivity : AppCompatActivity() {
     lateinit var binding: ActivitySplashBinding

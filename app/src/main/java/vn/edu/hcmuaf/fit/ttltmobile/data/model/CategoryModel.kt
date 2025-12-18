@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.domain
+package vn.edu.hcmuaf.fit.ttltmobile.data.model
 
 data class CategoryModel (
     val title: String = "",

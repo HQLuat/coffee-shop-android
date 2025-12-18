@@ -1,10 +1,10 @@
-package vn.edu.hcmuaf.fit.ttltmobile.viewmodel
+package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import vn.edu.hcmuaf.fit.ttltmobile.domain.CategoryModel
-import vn.edu.hcmuaf.fit.ttltmobile.domain.ItemModel
-import vn.edu.hcmuaf.fit.ttltmobile.repository.MainRepository
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.CategoryModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.repository.MainRepository
 
 class MainViewModel: ViewModel() {
     private val repository = MainRepository()

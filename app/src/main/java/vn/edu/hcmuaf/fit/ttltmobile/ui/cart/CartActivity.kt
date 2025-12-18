@@ -1,17 +1,12 @@
-package vn.edu.hcmuaf.fit.ttltmobile.activity
+package vn.edu.hcmuaf.fit.ttltmobile.ui.cart
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import vn.edu.hcmuaf.fit.ttltmobile.R
-import vn.edu.hcmuaf.fit.ttltmobile.adapter.CartAdapter
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityCartBinding
-import vn.edu.hcmuaf.fit.ttltmobile.databinding.ViewholderCartBinding
-import vn.edu.hcmuaf.fit.ttltmobile.helper.ChangeNumberItemsListener
-import vn.edu.hcmuaf.fit.ttltmobile.helper.ManagmentCart
+import vn.edu.hcmuaf.fit.ttltmobile.utils.ChangeNumberItemsListener
+import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
 
 class CartActivity : AppCompatActivity() {
     lateinit var binding: ActivityCartBinding

@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.activity
+package vn.edu.hcmuaf.fit.ttltmobile.ui.productDetail
 
 import android.os.Bundle
 import android.view.View
@@ -11,10 +11,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import eightbitlab.com.blurview.RenderScriptBlur
-import vn.edu.hcmuaf.fit.ttltmobile.adapter.SizeAdapter
+import vn.edu.hcmuaf.fit.ttltmobile.ui.home.SizeAdapter
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityDetailBinding
-import vn.edu.hcmuaf.fit.ttltmobile.domain.ItemModel
-import vn.edu.hcmuaf.fit.ttltmobile.helper.ManagmentCart
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
+import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
 
 class DetailActivity : AppCompatActivity() {
     lateinit var binding: ActivityDetailBinding

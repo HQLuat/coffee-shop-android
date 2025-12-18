@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.repository
+package vn.edu.hcmuaf.fit.ttltmobile.data.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,8 +7,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
-import vn.edu.hcmuaf.fit.ttltmobile.domain.CategoryModel
-import vn.edu.hcmuaf.fit.ttltmobile.domain.ItemModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.CategoryModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 
 class MainRepository {
     private val firebaseDatabase = FirebaseDatabase.getInstance()

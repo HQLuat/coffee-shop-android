@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.activity
+package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,11 +6,8 @@ import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import vn.edu.hcmuaf.fit.ttltmobile.adapter.CategoryAdapter
-import vn.edu.hcmuaf.fit.ttltmobile.adapter.PopularAdapter
-import vn.edu.hcmuaf.fit.ttltmobile.adapter.SpecialAdapter
+import vn.edu.hcmuaf.fit.ttltmobile.ui.cart.CartActivity
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityMainBinding
-import vn.edu.hcmuaf.fit.ttltmobile.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding

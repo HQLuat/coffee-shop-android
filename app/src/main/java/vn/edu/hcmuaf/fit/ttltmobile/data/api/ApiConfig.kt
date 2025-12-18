@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.api
+package vn.edu.hcmuaf.fit.ttltmobile.data.api
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor;
