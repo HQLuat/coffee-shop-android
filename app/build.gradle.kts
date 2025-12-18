@@ -47,25 +47,25 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
 
     // Lifecycle & ViewModel
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // RecyclerView
-    implementation("androidx.recyclerview:recyclerview:1.3.2")
+    implementation(libs.androidx.recyclerview)
 
     // Retrofit - REST API
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp.logging)
 
     // Gson
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.gson)
 
     // Glide - Image Loading
-    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.glide)
 
     // BlurView
-    implementation("com.github.Dimezis:BlurView:version-2.0.3")
+    implementation(libs.blurview)
 
     // Testing
     testImplementation(libs.junit)
