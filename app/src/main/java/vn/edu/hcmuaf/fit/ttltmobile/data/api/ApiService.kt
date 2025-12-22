@@ -10,7 +10,7 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.model.User
 
 interface ApiService {
     // --- AUTH (Ezchiel) ---
-    @POST("login")
+    @POST("users/login")
     fun login(@Body loginRequest: LoginRequest): Call<User>
 
     // --- PRODUCT (Hibike) ---
