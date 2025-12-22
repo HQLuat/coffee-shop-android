@@ -15,6 +15,7 @@ import vn.edu.hcmuaf.fit.ttltmobile.ui.home.SizeAdapter
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityDetailBinding
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
+//import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
 
 class DetailActivity : AppCompatActivity() {
     lateinit var binding: ActivityDetailBinding
@@ -80,10 +81,10 @@ class DetailActivity : AppCompatActivity() {
             ratingTxt.text = item.rating.toString()
             extraTxt.text = item.extra
 
-            addToCartBtn.setOnClickListener {
-                item.numberInCart = Integer.parseInt(numberItemTxt.text.toString())
-                managmentCart.insertItems(item)
-            }
+//            addToCartBtn.setOnClickListener {
+//                item.numberInCart = Integer.parseInt(numberItemTxt.text.toString())
+//                managmentCart.insertItems(item)
+//            }
 
             backBtn.setOnClickListener { finish() }
             plusCart.setOnClickListener {

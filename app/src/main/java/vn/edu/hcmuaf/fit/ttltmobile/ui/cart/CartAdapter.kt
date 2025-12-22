@@ -11,6 +11,8 @@ import vn.edu.hcmuaf.fit.ttltmobile.databinding.ViewholderCartBinding
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 import vn.edu.hcmuaf.fit.ttltmobile.utils.ChangeNumberItemsListener
 import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
+//import vn.edu.hcmuaf.fit.ttltmobile.utils.ChangeNumberItemsListener
+//import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
 
 class CartAdapter (private val listItemSelected: ArrayList<ItemModel>,
                    context: Context,
@@ -42,37 +44,37 @@ RecyclerView.Adapter<CartAdapter.Viewholder>(){
             .apply(RequestOptions().transform(CenterCrop()))
             .into(holder.binding.picCart)
 
-        holder.binding.plusEachItem.setOnClickListener {
-            managmentCart.plusItem(listItemSelected, position, object : ChangeNumberItemsListener{
-                override fun onChanged() {
-                   notifyDataSetChanged()
-                    changeNumberItemsListener?.onChanged()
-                }
-            })
-        }
+//        holder.binding.plusEachItem.setOnClickListener {
+//            managmentCart.plusItem(listItemSelected, position, object : ChangeNumberItemsListener{
+//                override fun onChanged() {
+//                   notifyDataSetChanged()
+//                    changeNumberItemsListener?.onChanged()
+//                }
+//            })
+//        }
 
-        holder.binding.minusEachItem.setOnClickListener {
-            managmentCart.minusItem(listItemSelected, position, object : ChangeNumberItemsListener{
-                override fun onChanged() {
-                    notifyDataSetChanged()
-                    changeNumberItemsListener?.onChanged()
-                }
-            })
-        }
-
-        holder.binding.removeItemBtn.setOnClickListener {
-            managmentCart.romoveItem(
-                listItemSelected,
-                position,
-                object  : ChangeNumberItemsListener {
-                    override fun onChanged() {
-                        notifyDataSetChanged()
-                        changeNumberItemsListener?.onChanged()
-                    }
-
-                }
-            )
-        }
+//        holder.binding.minusEachItem.setOnClickListener {
+//            managmentCart.minusItem(listItemSelected, position, object : ChangeNumberItemsListener{
+//                override fun onChanged() {
+//                    notifyDataSetChanged()
+//                    changeNumberItemsListener?.onChanged()
+//                }
+//            })
+//        }
+//
+//        holder.binding.removeItemBtn.setOnClickListener {
+//            managmentCart.romoveItem(
+//                listItemSelected,
+//                position,
+//                object  : ChangeNumberItemsListener {
+//                    override fun onChanged() {
+//                        notifyDataSetChanged()
+//                        changeNumberItemsListener?.onChanged()
+//                    }
+//
+//                }
+//            )
+//        }
     }
 
     override fun getItemCount(): Int = listItemSelected.size
