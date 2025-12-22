@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.helper;
+package vn.edu.hcmuaf.fit.ttltmobile.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,7 +13,7 @@ import android.util.Log;
 
 
 import com.google.gson.Gson;
-import vn.edu.hcmuaf.fit.ttltmobile.domain.ItemModel;
+//import vn.edu.hcmuaf.fit.ttltmobile.domain.ItemModel;
 
 
 import java.io.File;
@@ -344,18 +344,18 @@ public class TinyDB {
 
     // Put methods
 
-    public ArrayList<ItemModel> getListObject(String key) {
-        Gson gson = new Gson();
-
-        ArrayList<String> objStrings = getListString(key);
-        ArrayList<ItemModel> playerList = new ArrayList<ItemModel>();
-
-        for (String jObjString : objStrings) {
-            ItemModel player = gson.fromJson(jObjString, ItemModel.class);
-            playerList.add(player);
-        }
-        return playerList;
-    }
+//    public ArrayList<ItemModel> getListObject(String key) {
+//        Gson gson = new Gson();
+//
+//        ArrayList<String> objStrings = getListString(key);
+//        ArrayList<ItemModel> playerList = new ArrayList<ItemModel>();
+//
+//        for (String jObjString : objStrings) {
+//            ItemModel player = gson.fromJson(jObjString, ItemModel.class);
+//            playerList.add(player);
+//        }
+//        return playerList;
+//    }
 
     public <T> T getObject(String key, Class<T> classOfT) {
 
@@ -514,15 +514,15 @@ public class TinyDB {
         putString(key, gson.toJson(obj));
     }
 
-    public void putListObject(String key, ArrayList<ItemModel> playerList) {
-        checkForNullKey(key);
-        Gson gson = new Gson();
-        ArrayList<String> objStrings = new ArrayList<String>();
-        for (ItemModel player : playerList) {
-            objStrings.add(gson.toJson(player));
-        }
-        putListString(key, objStrings);
-    }
+//    public void putListObject(String key, ArrayList<ItemModel> playerList) {
+//        checkForNullKey(key);
+//        Gson gson = new Gson();
+//        ArrayList<String> objStrings = new ArrayList<String>();
+//        for (ItemModel player : playerList) {
+//            objStrings.add(gson.toJson(player));
+//        }
+//        putListString(key, objStrings);
+//    }
 
     /**
      * Remove SharedPreferences item with 'key'
