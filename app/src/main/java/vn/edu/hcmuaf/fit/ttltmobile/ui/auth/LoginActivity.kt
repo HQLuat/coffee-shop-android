@@ -34,6 +34,17 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                 val email = edtEmail.text.toString().trim()
                 val password = edtPassword.text.toString().trim()
 
+                if (validateInput(email, password)) {
+                    performLogin(email, password)
+                }
+            }
+
+            tvForgotPassword.setOnClickListener {
+                showToast("Chức năng đang phát triển")
+            }
+
+            tvSignUp.setOnClickListener {
+                showToast("Chức năng đăng ký đang phát triển")
             }
         }
     }
@@ -56,11 +67,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                     edtPassword.requestFocus()
                     return false
                 }
-                password.length < 6 -> {
-                    edtPassword.error = "Mật khẩu phải có ít nhất 6 ký tự"
-                    edtPassword.requestFocus()
-                    return false
-                }
+//                password.length < 6 -> {
+//                    edtPassword.error = "Mật khẩu phải có ít nhất 6 ký tự"
+//                    edtPassword.requestFocus()
+//                    return false
+//                }
             }
         }
         return true
