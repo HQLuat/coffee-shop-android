@@ -6,10 +6,14 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.LoginRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.Product
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.RegisterRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.User
 
 interface ApiService {
     // --- AUTH (Ezchiel) ---
+    @POST("users")
+    fun register(@Body registerRequest: RegisterRequest): Call<User>
+
     @POST("users/login")
     fun login(@Body loginRequest: LoginRequest): Call<User>
 
