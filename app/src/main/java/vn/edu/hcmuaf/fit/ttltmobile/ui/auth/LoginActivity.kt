@@ -26,6 +26,15 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
     override fun createView() {
         setupClickListeners()
+        handleRegisteredEmail()
+    }
+
+    private fun handleRegisteredEmail() {
+        val registeredEmail = intent.getStringExtra("registered_email")
+        if (!registeredEmail.isNullOrEmpty()) {
+            binding.edtEmail.setText(registeredEmail)
+            binding.edtPassword.requestFocus()
+        }
     }
 
     private fun setupClickListeners() {
@@ -44,7 +53,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
             }
 
             tvSignUp.setOnClickListener {
-                showToast("Chức năng đăng ký đang phát triển")
+                navigateToRegister()
             }
         }
     }
@@ -130,5 +139,10 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    private fun navigateToRegister() {
+        val intent = Intent(this, RegisterActivity::class.java)
+        startActivity(intent)
     }
 }
