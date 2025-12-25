@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -35,6 +38,18 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
+    }
+    defaultConfig {
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            properties.load(FileInputStream(localPropertiesFile))
+        }
+
+        val baseUrl = properties.getProperty("server.url") ?: "\"http://localhost:8080/api/\""
+
+        buildConfigField("String", "BASE_URL", baseUrl)
     }
 }
 
