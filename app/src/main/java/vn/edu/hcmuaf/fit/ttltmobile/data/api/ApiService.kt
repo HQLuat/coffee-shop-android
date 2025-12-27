@@ -5,6 +5,8 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.LoginRequest
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.LogoutRequest
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.LogoutResponse
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.Product
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.RegisterRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.User
@@ -16,6 +18,9 @@ interface ApiService {
 
     @POST("users/login")
     fun login(@Body loginRequest: LoginRequest): Call<User>
+
+    @POST("logout")
+    fun logout(@Body logoutRequest: LogoutRequest): Call<LogoutResponse>
 
     // --- PRODUCT (Hibike) ---
     @GET("products")

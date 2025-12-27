@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.ttltmobile.data.api
 
+import android.content.Context
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit
@@ -10,28 +11,39 @@ import java.util.concurrent.TimeUnit
 object ApiConfig {
     private const val BASE_URL = BuildConfig.BASE_URL
 
-    private fun provideOkHttpClient(): OkHttpClient {
+    private fun provideOkHttpClient(context: Context? = null): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
-        return OkHttpClient.Builder()
+        val builder = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
-            .build()
+
+        context?.let {
+            builder.addInterceptor(AuthInterceptor(it))
+        }
+
+        return builder.build()
     }
 
-    private val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
+    private fun getRetrofit(context: Context? = null): Retrofit {
+        return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(provideOkHttpClient())
+            .client(provideOkHttpClient(context))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
+    // No token
     fun <T> createService(serviceClass: Class<T>): T {
-        return retrofit.create(serviceClass)
+        return getRetrofit().create(serviceClass)
+    }
+
+    // Has token
+    fun <T> createService(serviceClass: Class<T>, context: Context): T {
+        return getRetrofit(context).create(serviceClass)
     }
 }

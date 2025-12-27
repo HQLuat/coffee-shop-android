@@ -11,4 +11,12 @@
     <string name="price">Price</string>
     <string name="_0">$0</string>
     <string name="buy_now">Buy Now</string>
+
+    <!-- profile -->
+    <string name="avatar">Avatar</string>
+    <string name="personal_info">Personal Information</string>
+    <string name="change_password">Change Password</string>
+    <string name="orders">Orders</string>
+    <string name="arrow">Arrow</string>
+    <string name="back">Back</string>
 </resources>
