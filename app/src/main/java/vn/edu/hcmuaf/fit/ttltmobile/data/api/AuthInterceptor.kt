@@ -17,7 +17,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
         val sharedPref = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val token = sharedPref.getString("token", null)
 
-        val requestBuilder = chain.request().newBuilder()
+        val requestBuilder = originalRequest.newBuilder()
 
         if (!token.isNullOrEmpty()) {
             requestBuilder.addHeader("Authorization", "Bearer $token")

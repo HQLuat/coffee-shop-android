@@ -108,7 +108,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
 
                 if (response.isSuccessful) {
                     val userResponse = response.body()
-                    if (userResponse?.refreshToken != null) {
+                    if (userResponse?.id != null) {
                         showToast("Đăng ký thành công! Vui lòng đăng nhập")
                         navigateToLoginWithEmail(binding.edtEmail.text.toString().trim())
                     } else {
