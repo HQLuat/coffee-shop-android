@@ -2,21 +2,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="20dp"
-    android:background="@drawable/bg_white_rounded"
+    android:padding="24dp"
+    android:background="@drawable/bg_loading_coffee"
     android:orientation="horizontal"
     android:gravity="center_vertical">
 
     <ProgressBar
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:indeterminateTint="@color/purple" />
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:indeterminateTint="@color/orange"
+        android:indeterminateTintMode="src_in" />
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="Vui lòng đợi..."
-        android:textSize="16sp"
-        android:textColor="@android:color/black" />
+        android:orientation="vertical"
+        android:layout_marginStart="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đang xử lý..."
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Vui lòng đợi trong giây lát"
+            android:textSize="14sp"
+            android:textColor="@color/grey" />
+    </LinearLayout>
+
 </LinearLayout>

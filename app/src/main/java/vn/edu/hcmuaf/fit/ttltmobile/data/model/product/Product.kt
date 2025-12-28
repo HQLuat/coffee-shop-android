@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.fit.ttltmobile.data.model
+package vn.edu.hcmuaf.fit.ttltmobile.data.model.product
 
 import com.google.gson.annotations.SerializedName
 

@@ -11,8 +11,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.LogoutRequest
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.LogoutResponse
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutRequest
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutResponse
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.FragmentProfileBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.auth.LoginActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseFragment
