@@ -8,8 +8,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.LoginRequest
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.User
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LoginRequest
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.User
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityLoginBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.home.MainActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
