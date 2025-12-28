@@ -19,7 +19,7 @@ interface ApiService {
     @POST("users/login")
     fun login(@Body loginRequest: LoginRequest): Call<User>
 
-    @POST("logout")
+    @POST("users/logout")
     fun logout(@Body logoutRequest: LogoutRequest): Call<LogoutResponse>
 
     // --- PRODUCT (Hibike) ---

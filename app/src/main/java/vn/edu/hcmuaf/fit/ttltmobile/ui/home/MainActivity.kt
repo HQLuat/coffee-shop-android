@@ -1,62 +1,48 @@
 package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import vn.edu.hcmuaf.fit.ttltmobile.ui.cart.CartActivity
+import androidx.fragment.app.Fragment
+import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityMainBinding
+import vn.edu.hcmuaf.fit.ttltmobile.ui.profile.ProfileFragment
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-    private val viewModel = MainViewModel(
 
-    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initCategory()
-        initPopular()
-        initSpecial()
-        initBottomMenu()
-    }
-
-    private fun initBottomMenu() {
-        binding.cartBtn.setOnClickListener { startActivity(Intent(this, CartActivity::class.java)) }
-    }
-
-    private fun initSpecial() {
-        binding.progressBarSpecial.visibility = View.VISIBLE
-        viewModel.loadSpecial().observeForever {
-            binding.recyclerViewSpecial.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-            binding.progressBarSpecial.visibility = View.GONE
-            binding.recyclerViewSpecial.adapter = SpecialAdapter(it)
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment())
         }
-        viewModel.loadSpecial()
+
+        setupBottomNavigation()
     }
 
-    private fun initPopular() {
-        binding.progressBarPopular.visibility = View.VISIBLE
-        viewModel.loadPopular().observeForever {
-            binding.recyclerViewPopular.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-            binding.progressBarPopular.visibility = View.GONE
-            binding.recyclerViewPopular.adapter = PopularAdapter(it)
+    private fun setupBottomNavigation() {
+        binding.bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    loadFragment(HomeFragment())
+                    true
+                }
+                R.id.nav_profile -> {
+                    loadFragment(ProfileFragment())
+                    true
+                }
+                else -> false
+            }
         }
-        viewModel.loadPopular()
     }
 
-    private fun initCategory() {
-        binding.progressBarCategory.visibility = View.VISIBLE
-        viewModel.loadCategory().observeForever {
-            binding.recyclerViewCategory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-            binding.progressBarCategory.visibility = View.GONE
-            binding.recyclerViewCategory.adapter = CategoryAdapter(it)
-        }
-        viewModel.loadCategory()
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.nav_host_fragment, fragment)
+            .commit()
     }
 }

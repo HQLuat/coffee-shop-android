@@ -2,42 +2,38 @@ package vn.edu.hcmuaf.fit.ttltmobile.ui.profile
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.LogoutRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.LogoutResponse
-import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityProfileBinding
+import vn.edu.hcmuaf.fit.ttltmobile.databinding.FragmentProfileBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.auth.LoginActivity
-import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
+import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseFragment
 
-class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
+class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
 
     private val apiService: ApiService by lazy {
-        ApiConfig.createService(ApiService::class.java, this)
+        ApiConfig.createService(ApiService::class.java, requireContext())
     }
 
-    override fun getViewBinding(): ActivityProfileBinding {
-        return ActivityProfileBinding.inflate(layoutInflater)
+    override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentProfileBinding {
+        return FragmentProfileBinding.inflate(inflater, container, false)
     }
 
-    override fun createView() {
+    override fun setupView() {
         loadUserInfo()
         setupClickListeners()
     }
 
     private fun loadUserInfo() {
-        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val sharedPref = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val fullName = sharedPref.getString("full_name", "Tên người dùng")
         val email = sharedPref.getString("email", "email@example.com")
 
@@ -49,10 +45,6 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
 
     private fun setupClickListeners() {
         binding.apply {
-            backBtn.setOnClickListener {
-                finish()
-            }
-
             layoutPersonalInfo.setOnClickListener {
                 showToast("Chức năng đang phát triển")
             }
@@ -72,7 +64,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
     }
 
     private fun showLogoutConfirmDialog() {
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(requireContext())
             .setTitle("Xác nhận đăng xuất")
             .setMessage("Bạn có chắc chắn muốn đăng xuất?")
             .setPositiveButton("Đăng xuất") { _, _ ->
@@ -83,7 +75,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
     }
 
     private fun performLogout() {
-        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val sharedPref = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val refreshToken = sharedPref.getString("refresh_token", null)
 
         if (refreshToken.isNullOrEmpty()) {
@@ -126,7 +118,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
     }
 
     private fun clearUserData() {
-        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val sharedPref = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             clear()
             apply()
@@ -134,9 +126,9 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
     }
 
     private fun navigateToLogin() {
-        val intent = Intent(this, LoginActivity::class.java)
+        val intent = Intent(requireContext(), LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
-        finish()
+        requireActivity().finish()
     }
 }
