@@ -12,8 +12,20 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.RegisterRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.User
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityRegisterBinding
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
+import java.util.regex.Pattern
 
 class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
+
+    // Regex
+    companion object {
+        private val PASSWORD_PATTERN = Pattern.compile(
+            "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$"
+        )
+        private val TRUSTED_DOMAINS = setOf(
+            "gmail.com", "yahoo.com", "outlook.com", "hotmail.com",
+            "icloud.com", "protonmail.com", "zoho.com", "aol.com"
+        )
+    }
 
     private val apiService: ApiService by lazy {
         ApiConfig.createService(ApiService::class.java)
@@ -52,50 +64,69 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
 
     private fun validateInput(fullName: String, email: String, password: String, confirmPassword: String): Boolean {
         binding.apply {
-            when {
-                fullName.isEmpty() -> {
-                    edtFullName.error = "Vui lòng nhập họ và tên"
-                    edtFullName.requestFocus()
-                    return false
-                }
-                fullName.length < 2 -> {
-                    edtFullName.error = "Họ tên phải có ít nhất 2 ký tự"
-                    edtFullName.requestFocus()
-                    return false
-                }
-                email.isEmpty() -> {
-                    edtEmail.error = "Vui lòng nhập email"
-                    edtEmail.requestFocus()
-                    return false
-                }
-                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                    edtEmail.error = "Email không hợp lệ"
-                    edtEmail.requestFocus()
-                    return false
-                }
-                password.isEmpty() -> {
-                    edtPassword.error = "Vui lòng nhập mật khẩu"
-                    edtPassword.requestFocus()
-                    return false
-                }
-                password.length < 6 -> {
-                    edtPassword.error = "Mật khẩu phải có ít nhất 6 ký tự"
-                    edtPassword.requestFocus()
-                    return false
-                }
-                confirmPassword.isEmpty() -> {
-                    edtConfirmPassword.error = "Vui lòng xác nhận mật khẩu"
-                    edtConfirmPassword.requestFocus()
-                    return false
-                }
-                password != confirmPassword -> {
-                    edtConfirmPassword.error = "Mật khẩu không khớp"
-                    edtConfirmPassword.requestFocus()
-                    return false
-                }
+            // check full name
+            if (fullName.isEmpty()) {
+                edtFullName.error = "Vui lòng nhập họ và tên"
+                edtFullName.requestFocus()
+                return false
+            }
+            if (fullName.length < 2) {
+                edtFullName.error = "Họ tên phải có ít nhất 2 ký tự"
+                edtFullName.requestFocus()
+                return false
+            }
+
+            // check email
+            if (email.isEmpty()) {
+                edtEmail.error = "Vui lòng nhập email"
+                edtEmail.requestFocus()
+                return false
+            }
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                edtEmail.error = "Định dạng email không hợp lệ"
+                edtEmail.requestFocus()
+                return false
+            }
+            if (!isValidEmailDomain(email)) {
+                edtEmail.error = "Hệ thống chỉ chấp nhận: Gmail, Yahoo, Outlook, iCloud, Protonmail, Zoho, AOL"
+                edtEmail.requestFocus()
+                return false
+            }
+
+            // check password
+            if (password.isEmpty()) {
+                edtPassword.error = "Vui lòng nhập mật khẩu"
+                edtPassword.requestFocus()
+                return false
+            }
+            if (!PASSWORD_PATTERN.matcher(password).matches()) {
+                edtPassword.error = "Mật khẩu yếu! Cần tối thiểu 8 ký tự, gồm: chữ hoa, thường, số và ký tự đặc biệt (@#$%^&+=!)"
+                edtPassword.requestFocus()
+                return false
+            }
+
+            // check confirm password
+            if (confirmPassword.isEmpty()) {
+                edtConfirmPassword.error = "Vui lòng xác nhận mật khẩu"
+                edtConfirmPassword.requestFocus()
+                return false
+            }
+            if (password != confirmPassword) {
+                edtConfirmPassword.error = "Mật khẩu xác nhận không khớp"
+                edtConfirmPassword.requestFocus()
+                return false
             }
         }
         return true
+    }
+
+    private fun isValidEmailDomain(email: String): Boolean {
+        return try {
+            val domain = email.substring(email.indexOf("@") + 1).lowercase()
+            TRUSTED_DOMAINS.contains(domain)
+        } catch (e: Exception) {
+            false
+        }
     }
 
     private fun performRegister(fullName: String, email: String, password: String) {
@@ -109,8 +140,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
                 if (response.isSuccessful) {
                     val userResponse = response.body()
                     if (userResponse?.id != null) {
-                        showToast("Đăng ký thành công! Vui lòng đăng nhập")
-                        navigateToLoginWithEmail(binding.edtEmail.text.toString().trim())
+                        navigateToVerification(email)
                     } else {
                         showToast(userResponse?.message ?: "Đăng ký thất bại")
                     }
@@ -133,15 +163,14 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
         })
     }
 
-    private fun navigateToLoginWithEmail(email: String) {
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.putExtra("registered_email", email)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        startActivity(intent)
+    private fun navigateToLogin() {
         finish()
     }
 
-    private fun navigateToLogin() {
+    private fun navigateToVerification(email: String) {
+        val intent = Intent(this, VerificationPendingActivity::class.java)
+        intent.putExtra("email", email)
+        startActivity(intent)
         finish()
     }
 }
