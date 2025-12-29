@@ -18,6 +18,9 @@ interface ApiService {
     @POST("users/logout")
     fun logout(@Body logoutRequest: LogoutRequest): Call<LogoutResponse>
 
+    @POST("users/resend-verification")
+    fun resendVerification(@Body body: Map<String, String>): Call<Map<String, String>>
+
     // --- PRODUCT (Hibike) ---
     @GET("products")
     fun getProducts(): Call<List<Product>>
