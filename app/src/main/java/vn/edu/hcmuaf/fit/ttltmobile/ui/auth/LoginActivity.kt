@@ -49,7 +49,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
             }
 
             tvForgotPassword.setOnClickListener {
-                showToast("Chức năng đang phát triển")
+                navigateToForgotPass()
             }
 
             tvSignUp.setOnClickListener {
@@ -76,11 +76,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                     edtPassword.requestFocus()
                     return false
                 }
-//                password.length < 6 -> {
-//                    edtPassword.error = "Mật khẩu phải có ít nhất 6 ký tự"
-//                    edtPassword.requestFocus()
-//                    return false
-//                }
             }
         }
         return true
@@ -139,6 +134,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    private fun navigateToForgotPass() {
+        val intent = Intent(this, ForgotPasswordActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToRegister() {
