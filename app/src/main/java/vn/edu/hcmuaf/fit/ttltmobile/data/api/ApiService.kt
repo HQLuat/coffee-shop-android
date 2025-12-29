@@ -21,6 +21,9 @@ interface ApiService {
     @POST("users/resend-verification")
     fun resendVerification(@Body body: Map<String, String>): Call<Map<String, String>>
 
+    @POST("users/forgot-password")
+    fun forgotPassword(@Body body: Map<String, String>): Call<Map<String, String>>
+
     // --- PRODUCT (Hibike) ---
     @GET("products")
     fun getProducts(): Call<List<Product>>

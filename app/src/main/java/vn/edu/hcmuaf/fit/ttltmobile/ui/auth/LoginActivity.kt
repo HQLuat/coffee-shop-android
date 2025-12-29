@@ -3,6 +3,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.util.Patterns
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,7 +50,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
             }
 
             tvForgotPassword.setOnClickListener {
-                showToast("Chức năng đang phát triển")
+                navigateToForgotPass()
             }
 
             tvSignUp.setOnClickListener {
@@ -76,11 +77,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                     edtPassword.requestFocus()
                     return false
                 }
-//                password.length < 6 -> {
-//                    edtPassword.error = "Mật khẩu phải có ít nhất 6 ký tự"
-//                    edtPassword.requestFocus()
-//                    return false
-//                }
             }
         }
         return true
@@ -96,19 +92,28 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
                 if (response.isSuccessful) {
                     val userResponse = response.body()
-                    if (userResponse?.refreshToken != null) {
-                        // Dang nhap thanh cong
+                    if (userResponse != null) {
                         saveUserData(userResponse)
                         showToast("Đăng nhập thành công!")
                         navigateToMain()
                     } else {
-                        showToast(userResponse?.message ?: "Đăng nhập thất bại")
+                        showToast("Dữ liệu trả về bị lỗi")
                     }
                 } else {
-                    when (response.code()) {
-                        401 -> showToast("Email hoặc mật khẩu không đúng")
-                        500 -> showToast("Lỗi server, vui lòng thử lại sau")
-                        else -> showToast("Lỗi: ${response.code()}")
+                    try {
+                        val errorBody = response.errorBody()
+
+                        if (errorBody != null) {
+                            val errorBodyString = errorBody.string()
+                            val jsonObject = JSONObject(errorBodyString)
+                            val serverMessage = jsonObject.optString("message", "Đăng nhập thất bại")
+
+                            showToast(serverMessage)
+                        } else {
+                            showToast("Lỗi: ${response.code()}")
+                        }
+                    } catch (e: Exception) {
+                        showToast("Lỗi không xác định")
                     }
                 }
             }
@@ -139,6 +144,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    private fun navigateToForgotPass() {
+        val intent = Intent(this, ForgotPasswordActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToRegister() {
