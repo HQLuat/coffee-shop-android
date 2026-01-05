@@ -32,6 +32,11 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
         setupClickListeners()
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadUserInfo()
+    }
+
     private fun loadUserInfo() {
         val sharedPref = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val fullName = sharedPref.getString("full_name", "Tên người dùng")
@@ -46,7 +51,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
     private fun setupClickListeners() {
         binding.apply {
             layoutPersonalInfo.setOnClickListener {
-                showToast("Chức năng đang phát triển")
+                navigateToPersonalInfo()
             }
 
             layoutChangePassword.setOnClickListener {
@@ -113,7 +118,6 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                 clearUserData()
                 navigateToLogin()
             }
-
         })
     }
 
@@ -130,5 +134,10 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         requireActivity().finish()
+    }
+
+    private fun navigateToPersonalInfo() {
+        val intent = Intent(requireContext(), PersonalInfoActivity::class.java)
+        startActivity(intent)
     }
 }
