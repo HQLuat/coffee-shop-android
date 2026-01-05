@@ -55,7 +55,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
             }
 
             layoutChangePassword.setOnClickListener {
-                showToast("Chức năng đang phát triển")
+                navigateToChangePassword()
             }
 
             layoutOrders.setOnClickListener {
@@ -93,10 +93,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
 
         val logoutRequest = LogoutRequest(refreshToken)
         apiService.logout(logoutRequest).enqueue(object : Callback<LogoutResponse> {
-            override fun onResponse(
-                call: Call<LogoutResponse>,
-                response: Response<LogoutResponse>
-            ) {
+            override fun onResponse(call: Call<LogoutResponse>, response: Response<LogoutResponse>) {
                 hideLoading()
 
                 if (response.isSuccessful) {
@@ -138,6 +135,11 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
 
     private fun navigateToPersonalInfo() {
         val intent = Intent(requireContext(), PersonalInfoActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToChangePassword() {
+        val intent = Intent(requireContext(), ChangePasswordActivity::class.java)
         startActivity(intent)
     }
 }

@@ -31,6 +31,9 @@ interface ApiService {
     @PUT("users/profile")
     fun updateProfile(@Body updateUserProfileRequest: UpdateUserProfileRequest): Call<UserProfile>
 
+    @POST("users/change-password")
+    fun changePassword(@Body body: Map<String, String>): Call<Map<String, String>>
+
     // --- PRODUCT (Hibike) ---
     @GET("products")
     fun getProducts(): Call<List<Product>>

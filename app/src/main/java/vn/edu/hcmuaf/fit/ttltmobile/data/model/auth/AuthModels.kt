@@ -70,3 +70,13 @@ data class UpdateUserProfileRequest(
     @SerializedName("confirmNewPassword")
     val confirmNewPassword: String? = null
 )
+
+// Change password
+data class ChangePasswordRequest(
+    val currentPassword: String,
+    val newPassword: String,
+    val confirmPassword: String
+)
+data class ChangePasswordResponse(
+    val message: String
+)
