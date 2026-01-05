@@ -4,14 +4,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
-import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityForgotPasswordBinding
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
 
 class ForgotPasswordActivity : BaseActivity<ActivityForgotPasswordBinding>() {
 
-    private val apiService by lazy {
-        ApiConfig.createService(ApiService::class.java)
+    private val apiService: AuthApiService by lazy {
+        ApiConfig.getAuthService()
     }
 
     override fun getViewBinding(): ActivityForgotPasswordBinding {

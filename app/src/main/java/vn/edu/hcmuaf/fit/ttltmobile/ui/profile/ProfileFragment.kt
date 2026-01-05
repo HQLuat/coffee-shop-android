@@ -10,7 +10,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
-import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutResponse
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.FragmentProfileBinding
@@ -19,8 +19,8 @@ import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseFragment
 
 class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
 
-    private val apiService: ApiService by lazy {
-        ApiConfig.createService(ApiService::class.java, requireContext())
+    private val apiService: AuthApiService by lazy {
+        ApiConfig.getAuthService(requireContext())
     }
 
     override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentProfileBinding {
@@ -30,6 +30,11 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
     override fun setupView() {
         loadUserInfo()
         setupClickListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadUserInfo()
     }
 
     private fun loadUserInfo() {
@@ -46,11 +51,11 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
     private fun setupClickListeners() {
         binding.apply {
             layoutPersonalInfo.setOnClickListener {
-                showToast("Chức năng đang phát triển")
+                navigateToPersonalInfo()
             }
 
             layoutChangePassword.setOnClickListener {
-                showToast("Chức năng đang phát triển")
+                navigateToChangePassword()
             }
 
             layoutOrders.setOnClickListener {
@@ -88,10 +93,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
 
         val logoutRequest = LogoutRequest(refreshToken)
         apiService.logout(logoutRequest).enqueue(object : Callback<LogoutResponse> {
-            override fun onResponse(
-                call: Call<LogoutResponse>,
-                response: Response<LogoutResponse>
-            ) {
+            override fun onResponse(call: Call<LogoutResponse>, response: Response<LogoutResponse>) {
                 hideLoading()
 
                 if (response.isSuccessful) {
@@ -113,7 +115,6 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
                 clearUserData()
                 navigateToLogin()
             }
-
         })
     }
 
@@ -130,5 +131,15 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         requireActivity().finish()
+    }
+
+    private fun navigateToPersonalInfo() {
+        val intent = Intent(requireContext(), PersonalInfoActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun navigateToChangePassword() {
+        val intent = Intent(requireContext(), ChangePasswordActivity::class.java)
+        startActivity(intent)
     }
 }
