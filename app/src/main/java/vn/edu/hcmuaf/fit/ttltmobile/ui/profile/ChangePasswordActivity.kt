@@ -9,6 +9,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityChangePasswordBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.auth.LoginActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
@@ -22,8 +23,8 @@ class ChangePasswordActivity : BaseActivity<ActivityChangePasswordBinding>() {
         )
     }
 
-    private val apiService: ApiService by lazy {
-        ApiConfig.createService(ApiService::class.java, this)
+    private val apiService: AuthApiService by lazy {
+        ApiConfig.getAuthService(this)
     }
 
     override fun getViewBinding(): ActivityChangePasswordBinding {

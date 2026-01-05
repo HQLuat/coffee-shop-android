@@ -6,6 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import vn.edu.hcmuaf.fit.ttltmobile.BuildConfig
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import java.util.concurrent.TimeUnit
 
 object ApiConfig {
@@ -45,5 +46,14 @@ object ApiConfig {
     // Has token
     fun <T> createService(serviceClass: Class<T>, context: Context): T {
         return getRetrofit(context).create(serviceClass)
+    }
+
+    // Service providers
+    fun getAuthService(): AuthApiService {
+        return getRetrofit().create(AuthApiService::class.java)
+    }
+
+    fun getAuthService(context: Context): AuthApiService {
+        return getRetrofit(context).create(AuthApiService::class.java)
     }
 }

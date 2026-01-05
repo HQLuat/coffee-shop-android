@@ -2,13 +2,14 @@ package vn.edu.hcmuaf.fit.ttltmobile.ui.profile
 
 import android.content.Context
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
-import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.UpdateUserProfileRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.UserProfile
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityPersonalInfoBinding
@@ -18,8 +19,8 @@ import java.util.Locale
 
 class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
 
-    private val apiService: ApiService by lazy {
-        ApiConfig.createService(ApiService::class.java, this)
+    private val apiService: AuthApiService by lazy {
+        ApiConfig.getAuthService(this)
     }
 
     private var isEditMode = false
@@ -32,6 +33,17 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
     override fun createView() {
         setupClickListeners()
         loadUserInfo()
+
+        // Phone's back button
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isEditMode) {
+                    toggleEditMode()
+                } else {
+                    finish()
+                }
+            }
+        })
     }
 
     private fun setupClickListeners() {
@@ -132,14 +144,11 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
     }
 
     private fun saveUserInfo() {
-        showLoading()
-
         binding.apply {
-            val newFullName = binding.edtFullName.text.toString().trim()
-            val newPhoneNumber = binding.edtPhoneNumber.text.toString().trim()
-            val newAddress = binding.edtAddress.text.toString().trim()
+            val newFullName = edtFullName.text.toString().trim()
+            val newPhoneNumber = edtPhoneNumber.text.toString().trim()
+            val newAddress = edtAddress.text.toString().trim()
 
-            // check full name
             if (newFullName.isEmpty()) {
                 edtFullName.error = "Vui lòng nhập họ và tên"
                 edtFullName.requestFocus()
@@ -150,22 +159,21 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
                 edtFullName.requestFocus()
                 return
             }
-
-            // check phone number
             if (newPhoneNumber.isEmpty()) {
                 edtPhoneNumber.error = "Vui lòng nhập số điện thoại"
                 edtPhoneNumber.requestFocus()
                 return
             }
-
-            // check address
             if (newAddress.isEmpty()) {
                 edtAddress.error = "Vui lòng nhập địa chỉ"
                 edtAddress.requestFocus()
                 return
             }
 
+            showLoading()
+
             val request = UpdateUserProfileRequest(newFullName, newPhoneNumber, newAddress)
+
             apiService.updateProfile(request).enqueue(object : Callback<UserProfile> {
                 override fun onResponse(call: Call<UserProfile>, response: Response<UserProfile>) {
                     hideLoading()
@@ -176,24 +184,30 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
                             currentUserProfile = updatedProfile
                             displayUserInfo(updatedProfile)
                             updateLocalStorage(updatedProfile)
-                            showToast(updatedProfile.message ?: "Cập nhật thông tin người dùng thành công")
+
+                            toggleEditMode()
+
+                            showToast(updatedProfile.message ?: "Cập nhật thành công")
                         } else {
-                            showToast("Không thể tải thông tin người dùng mới")
+                            showToast("Dữ liệu trả về rỗng")
                         }
                     } else {
-                        showToast(response.body()?.message ?: "Lỗi khi cập nhật thông tin người dùng")
+                        try {
+                            val errorJson = response.errorBody()?.string()
+                            showToast("Lỗi: ${response.code()} - $errorJson")
+                        } catch (e: Exception) {
+                            showToast("Lỗi khi cập nhật: ${response.message()}")
+                        }
                     }
                 }
 
                 override fun onFailure(call: Call<UserProfile>, t: Throwable) {
                     hideLoading()
-                    Log.e("PersonalInfoActivity", "Update info error: ${t.message}", t)
-                    showToast("Không thể kết nối đến server")
+                    Log.e("PersonalInfoActivity", "Lỗi kết nối: ${t.message}", t)
+                    showToast("Không thể kết nối đến server. Vui lòng kiểm tra mạng.")
                 }
             })
         }
-
-        toggleEditMode()
     }
 
     private fun updateLocalStorage(userProfile: UserProfile) {

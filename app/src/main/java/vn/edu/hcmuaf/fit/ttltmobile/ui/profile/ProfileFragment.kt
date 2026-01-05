@@ -10,7 +10,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
-import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutResponse
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.FragmentProfileBinding
@@ -19,8 +19,8 @@ import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseFragment
 
 class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
 
-    private val apiService: ApiService by lazy {
-        ApiConfig.createService(ApiService::class.java, requireContext())
+    private val apiService: AuthApiService by lazy {
+        ApiConfig.getAuthService(requireContext())
     }
 
     override fun getViewBinding(inflater: LayoutInflater, container: ViewGroup?): FragmentProfileBinding {
