@@ -4,16 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/darkBrown"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/brown"
         android:padding="16dp">
 
-        <!-- Header -->
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="40dp"
@@ -21,6 +19,7 @@
             android:padding="8dp"
             android:src="@drawable/back"
             android:contentDescription="@string/back"
+            app:tint="@color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,33 +30,35 @@
             android:text="Thông tin cá nhân"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:gravity="center"
             app:layout_constraintStart_toEndOf="@id/btnBack"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/btnBack"
             app:layout_constraintBottom_toBottomOf="@id/btnBack" />
 
-        <!-- Profile Picture -->
         <ImageView
             android:id="@+id/ivProfilePicture"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:src="@drawable/ic_person"
+            android:background="@drawable/brown_bg"
+            android:padding="20dp"
+            app:tint="@color/white"
             android:contentDescription="Profile picture"
             app:layout_constraintTop_toBottomOf="@id/btnBack"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Info Card -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardInfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
+            android:layout_marginTop="32dp"
+            app:cardBackgroundColor="@color/brown"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
             app:layout_constraintTop_toBottomOf="@id/ivProfilePicture"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -66,15 +67,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="24dp">
 
-                <!-- Full Name -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Họ và tên"
                     android:textSize="12sp"
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/orange" />
 
                 <EditText
                     android:id="@+id/edtFullName"
@@ -84,8 +84,10 @@
                     android:background="@android:color/transparent"
                     android:enabled="false"
                     android:hint="Nhập họ và tên"
+                    android:hintTextColor="@color/grey"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
                     android:inputType="textPersonName"
                     android:importantForAutofill="no" />
 
@@ -93,15 +95,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/lightGrey" />
+                    android:background="#33FFFFFF" />
 
-                <!-- Email -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:text="Email"
                     android:textSize="12sp"
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/orange" />
 
                 <TextView
                     android:id="@+id/tvEmail"
@@ -110,22 +112,21 @@
                     android:layout_marginTop="4dp"
                     android:text="example@Gmail.com"
                     android:textSize="16sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/white" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/lightGrey" />
+                    android:background="#33FFFFFF" />
 
-                <!-- Phone number -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Số điện thoại"
                     android:textSize="12sp"
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/orange" />
 
                 <EditText
                     android:id="@+id/edtPhoneNumber"
@@ -135,25 +136,25 @@
                     android:background="@android:color/transparent"
                     android:enabled="false"
                     android:hint="Nhập số điện thoại"
+                    android:hintTextColor="@color/grey"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:inputType="textPersonName"
+                    android:textColor="@color/white"
+                    android:inputType="phone"
                     android:importantForAutofill="no" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/lightGrey" />
+                    android:background="#33FFFFFF" />
 
-                <!-- Address -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Địa chỉ"
                     android:textSize="12sp"
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/orange" />
 
                 <EditText
                     android:id="@+id/edtAddress"
@@ -163,25 +164,25 @@
                     android:background="@android:color/transparent"
                     android:enabled="false"
                     android:hint="Nhập địa chỉ"
+                    android:hintTextColor="@color/grey"
                     android:textSize="16sp"
-                    android:textColor="@color/black"
-                    android:inputType="textPersonName"
+                    android:textColor="@color/white"
+                    android:inputType="textPostalAddress"
                     android:importantForAutofill="no" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/lightGrey" />
+                    android:background="#33FFFFFF" />
 
-                <!-- Role -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Vai trò"
                     android:textSize="12sp"
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/orange" />
 
                 <TextView
                     android:id="@+id/tvRole"
@@ -190,22 +191,21 @@
                     android:layout_marginTop="4dp"
                     android:text="Người dùng"
                     android:textSize="16sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/white" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
-                    android:background="@color/lightGrey" />
+                    android:background="#33FFFFFF" />
 
-                <!-- Created At -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Ngày tạo tài khoản"
                     android:textSize="12sp"
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/orange" />
 
                 <TextView
                     android:id="@+id/tvCreatedAt"
@@ -214,22 +214,23 @@
                     android:layout_marginTop="4dp"
                     android:text="01/01/2024"
                     android:textSize="16sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/white" />
 
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Edit/Save Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEditSave"
             android:layout_width="0dp"
             android:layout_height="56dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="32dp"
             android:text="Chỉnh sửa"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:cornerRadius="12dp"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/orange"
+            app:cornerRadius="24dp"
             app:layout_constraintTop_toBottomOf="@id/cardInfo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
