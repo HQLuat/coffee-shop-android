@@ -25,6 +25,9 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadCart() {
         _isLoading.value = true
+        _errorMessage.value = "" // Reset message
+        _successMessage.value = "" // Reset message
+
         repository.getCart { result ->
             _isLoading.value = false
             result.onSuccess { cart ->
@@ -37,6 +40,9 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addToCart(productId: Long, quantity: Int) {
         _isLoading.value = true
+        _errorMessage.value = ""
+        _successMessage.value = ""
+
         repository.addToCart(productId, quantity) { result ->
             _isLoading.value = false
             result.onSuccess { cart ->
@@ -60,11 +66,14 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun updateQuantity(cartItemId: Long, newQuantity: Int) {
         _isLoading.value = true
+        _errorMessage.value = ""
+        _successMessage.value = ""
+
         repository.updateCartItem(cartItemId, newQuantity) { result ->
             _isLoading.value = false
             result.onSuccess { cart ->
                 _cartData.value = cart
-                _successMessage.value = cart.message ?: "Đã cập nhật"
+                _successMessage.value = "Đã cập nhật"
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Không thể cập nhật"
             }
@@ -73,11 +82,14 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
 
     fun removeItem(cartItemId: Long) {
         _isLoading.value = true
+        _errorMessage.value = ""
+        _successMessage.value = ""
+
         repository.removeCartItem(cartItemId) { result ->
             _isLoading.value = false
             result.onSuccess { cart ->
                 _cartData.value = cart
-                _successMessage.value = cart.message ?: "Đã xóa sản phẩm"
+                _successMessage.value = "Đã xóa sản phẩm"
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Không thể xóa sản phẩm"
             }
@@ -86,11 +98,14 @@ class CartViewModel(application: Application) : AndroidViewModel(application) {
 
     fun clearCart() {
         _isLoading.value = true
+        _errorMessage.value = ""
+        _successMessage.value = ""
+
         repository.clearCart { result ->
             _isLoading.value = false
             result.onSuccess { cart ->
                 _cartData.value = cart
-                _successMessage.value = cart.message ?: "Đã xóa giỏ hàng"
+                _successMessage.value = "Đã xóa giỏ hàng"
             }.onFailure { error ->
                 _errorMessage.value = error.message ?: "Không thể xóa giỏ hàng"
             }
