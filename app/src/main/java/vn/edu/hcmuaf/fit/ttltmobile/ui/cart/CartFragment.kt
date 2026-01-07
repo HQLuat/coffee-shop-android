@@ -21,13 +21,23 @@ class CartFragment: BaseFragment<FragmentCartBinding>() {
     }
 
     override fun setupView() {
-        viewModel = ViewModelProvider(this)[CartViewModel::class.java]
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
+        )[CartViewModel::class.java]
+
         setupRecyclerView()
         setupListeners()
         observeViewModel()
+
+        // Load cart khi fragment được tạo
         viewModel.loadCart()
     }
-
+//    override fun onResume() {
+//        super.onResume()
+//        // Reload cart mỗi khi quay lại fragment
+//        viewModel.loadCart()
+//    }
     private fun setupListeners(){
         binding.apply {
             checkOutBtn.setOnClickListener{
@@ -39,11 +49,11 @@ class CartFragment: BaseFragment<FragmentCartBinding>() {
     private fun setupRecyclerView() {
         cartAdapter = CartAdapter(
             items = mutableListOf(),
-            onQuantityChange = { cartItemId, quantity, isIncrease ->
+            onQuantityChange = { cartItemId, currentQuantity, isIncrease ->
                 if (isIncrease) {
-                    viewModel.increaseQuantity(cartItemId, quantity)
+                    viewModel.increaseQuantity(cartItemId, currentQuantity)
                 } else {
-                    viewModel.decreaseQuantity(cartItemId, quantity)
+                    viewModel.decreaseQuantity(cartItemId, currentQuantity)
                 }
             },
             onRemoveItem = { cartItemId ->
@@ -67,7 +77,7 @@ class CartFragment: BaseFragment<FragmentCartBinding>() {
             .show()
     }
     private fun observeViewModel() {
-        viewModel.cartData.observe(this) { cart ->
+        viewModel.cartData.observe(viewLifecycleOwner) { cart ->
             if (cart.isEmpty()) {
                 showEmptyCart()
             } else {
@@ -75,26 +85,29 @@ class CartFragment: BaseFragment<FragmentCartBinding>() {
             }
         }
 
-        viewModel.isLoading.observe(this) { isLoading ->
-            if (isLoading) {
-                showLoading()
-            } else {
-                hideLoading()
-            }
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.loadingOverlay.visibility = if (isLoading) View.VISIBLE else View.GONE
+//            if (isLoading) {
+//                showLoading()
+//            } else {
+//                hideLoading()
+//            }
         }
 
-        viewModel.errorMessage.observe(this) { message ->
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
                 showToast(message)
             }
         }
 
-        viewModel.successMessage.observe(this) { message ->
+        viewModel.successMessage.observe(viewLifecycleOwner) { message ->
             if (message.isNotEmpty()) {
                 showToast(message)
             }
         }
     }
+
+
     private fun showEmptyCart() {
         binding.apply {
             listView.visibility = View.GONE
