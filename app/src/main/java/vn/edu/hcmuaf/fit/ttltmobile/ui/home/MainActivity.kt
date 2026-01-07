@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityMainBinding
+import vn.edu.hcmuaf.fit.ttltmobile.ui.cart.CartFragment
 import vn.edu.hcmuaf.fit.ttltmobile.ui.profile.ProfileFragment
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +34,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_profile -> {
                     loadFragment(ProfileFragment())
+                    true
+                }
+                R.id.nav_cart -> {
+                    loadFragment(CartFragment())
                     true
                 }
                 else -> false

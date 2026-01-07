@@ -1,81 +1,69 @@
 package vn.edu.hcmuaf.fit.ttltmobile.ui.cart
-
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.request.RequestOptions
+import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ViewholderCartBinding
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
-import vn.edu.hcmuaf.fit.ttltmobile.utils.ChangeNumberItemsListener
-import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
-//import vn.edu.hcmuaf.fit.ttltmobile.utils.ChangeNumberItemsListener
-//import vn.edu.hcmuaf.fit.ttltmobile.utils.ManagmentCart
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.cart.CartItemResponse
 
-class CartAdapter (private val listItemSelected: ArrayList<ItemModel>,
-                   context: Context,
-                   val changeNumberItemsListener: ChangeNumberItemsListener?=null):
-RecyclerView.Adapter<CartAdapter.Viewholder>(){
-    class Viewholder(val binding: ViewholderCartBinding):
+class CartAdapter(
+    private val items: MutableList<CartItemResponse>,
+    private val onQuantityChange: (Long, Int, Boolean) -> Unit, // cartItemId, quantity, isIncrease
+    private val onRemoveItem: (Long) -> Unit // cartItemId
+) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
+
+    inner class CartViewHolder(val binding: ViewholderCartBinding) :
         RecyclerView.ViewHolder(binding.root)
 
-    private  val managmentCart = ManagmentCart(context)
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): Viewholder {
-        val binding = ViewholderCartBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-    return Viewholder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
+        val binding = ViewholderCartBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
+        return CartViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: Viewholder, position: Int) {
-        val item = listItemSelected[position]
+    override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
+        val item = items[position]
 
-        holder.binding.titleTxt.text = item.title
-        holder.binding.feeEachitem.text = "$${item.price}"
-        holder.binding.totalEachItem.text = "$${Math.round(item.numberInCart * item.price)}"
-        holder.binding.numberItemTxt.text = item.numberInCart.toString()
+        with(holder.binding) {
+            titleTxt.text = item.productName
 
-        Glide.with(holder.itemView.context)
-            .load(item.picUrl[0])
-            .apply(RequestOptions().transform(CenterCrop()))
-            .into(holder.binding.picCart)
+            feeEachitem.text = item.getPriceFormatted()
 
-//        holder.binding.plusEachItem.setOnClickListener {
-//            managmentCart.plusItem(listItemSelected, position, object : ChangeNumberItemsListener{
-//                override fun onChanged() {
-//                   notifyDataSetChanged()
-//                    changeNumberItemsListener?.onChanged()
-//                }
-//            })
-//        }
+            numberItemTxt.text = item.quantity.toString()
 
-//        holder.binding.minusEachItem.setOnClickListener {
-//            managmentCart.minusItem(listItemSelected, position, object : ChangeNumberItemsListener{
-//                override fun onChanged() {
-//                    notifyDataSetChanged()
-//                    changeNumberItemsListener?.onChanged()
-//                }
-//            })
-//        }
-//
-//        holder.binding.removeItemBtn.setOnClickListener {
-//            managmentCart.romoveItem(
-//                listItemSelected,
-//                position,
-//                object  : ChangeNumberItemsListener {
-//                    override fun onChanged() {
-//                        notifyDataSetChanged()
-//                        changeNumberItemsListener?.onChanged()
-//                    }
-//
-//                }
-//            )
-//        }
+            totalEachItem.text = item.getSubtotalFormatted()
+
+//            Glide.with(holder.itemView.context)
+//                .load(item.imageUrl)
+//                .placeholder(R.drawable.coffee)
+//                .error(R.drawable.coffee)
+//                .into(picCart)
+
+            plusEachItem.setOnClickListener {
+                onQuantityChange(item.id, item.quantity, true)
+            }
+
+            minusEachItem.setOnClickListener {
+                if (item.quantity > 1) {
+                    onQuantityChange(item.id, item.quantity, false)
+                }
+            }
+
+            removeItemBtn.setOnClickListener {
+                onRemoveItem(item.id)
+            }
+        }
     }
 
-    override fun getItemCount(): Int = listItemSelected.size
+    override fun getItemCount(): Int = items.size
+
+    fun updateItems(newItems: List<CartItemResponse>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
+    }
 }
