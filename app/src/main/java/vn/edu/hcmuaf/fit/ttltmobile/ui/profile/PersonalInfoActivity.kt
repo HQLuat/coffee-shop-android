@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -83,7 +84,22 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
                         showToast("Không thể tải thông tin người dùng")
                     }
                 } else {
-                    showToast(response.body()?.message ?: "Lỗi khi tải thông tin người dùng")
+                    if (response.code() == 401 || response.code() == 403) {
+                        return
+                    }
+
+                    try {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody != null) {
+                            val jsonObject = JSONObject(errorBody)
+                            val errorMessage = jsonObject.optString("message", "Lấy thông tin người dùng thất bại")
+                            showToast(errorMessage)
+                        } else {
+                            showToast("Lỗi: ${response.code()}")
+                        }
+                    } catch (e: Exception) {
+                        showToast("Lỗi lấy thông tin người dùng")
+                    }
                 }
             }
 
