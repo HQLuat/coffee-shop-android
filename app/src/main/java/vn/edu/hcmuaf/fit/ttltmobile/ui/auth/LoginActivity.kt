@@ -29,6 +29,14 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
     override fun createView() {
         setupClickListeners()
         handleRegisteredEmail()
+        handleSessionExpired()
+    }
+
+    private fun handleSessionExpired() {
+        val sessionExpired = intent.getBooleanExtra("session_expired", false)
+        if (sessionExpired) {
+            showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.")
+        }
     }
 
     private fun handleRegisteredEmail() {

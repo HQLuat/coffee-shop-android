@@ -8,7 +8,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
-import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityChangePasswordBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.auth.LoginActivity
@@ -111,6 +110,10 @@ class ChangePasswordActivity : BaseActivity<ActivityChangePasswordBinding>() {
                     clearUserData()
                     navigateToLogin()
                 } else {
+                    if (response.code() == 401 || response.code() == 403) {
+                        return
+                    }
+
                     try {
                         val errorBody = response.errorBody()?.string()
                         if (errorBody != null) {

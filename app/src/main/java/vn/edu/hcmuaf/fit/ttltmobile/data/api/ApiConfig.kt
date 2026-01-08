@@ -7,10 +7,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import vn.edu.hcmuaf.fit.ttltmobile.BuildConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartApiService
 import java.util.concurrent.TimeUnit
 
 object ApiConfig {
-    private const val BASE_URL = BuildConfig.BASE_URL
+    const val BASE_URL = BuildConfig.BASE_URL
 
     private fun provideOkHttpClient(context: Context? = null): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
@@ -18,7 +19,6 @@ object ApiConfig {
         }
 
         val builder = OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
@@ -26,6 +26,8 @@ object ApiConfig {
         context?.let {
             builder.addInterceptor(AuthInterceptor(it))
         }
+
+        builder.addInterceptor(loggingInterceptor)
 
         return builder.build()
     }
@@ -55,5 +57,10 @@ object ApiConfig {
 
     fun getAuthService(context: Context): AuthApiService {
         return getRetrofit(context).create(AuthApiService::class.java)
+    }
+
+    // Cart Service
+    fun getCartService(context: Context): CartApiService {
+        return getRetrofit(context).create(CartApiService::class.java)
     }
 }
