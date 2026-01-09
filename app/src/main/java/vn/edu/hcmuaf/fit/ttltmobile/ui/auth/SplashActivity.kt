@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivitySplashBinding
+import vn.edu.hcmuaf.fit.ttltmobile.ui.admin.AdminDashboardActivity
 import vn.edu.hcmuaf.fit.ttltmobile.ui.home.MainActivity
 
 class SplashActivity : AppCompatActivity() {
@@ -24,7 +25,7 @@ class SplashActivity : AppCompatActivity() {
             delay(3000)
 
             if (isUserLoggedIn()) {
-                startActivity(Intent(this@SplashActivity, MainActivity::class.java))
+                navigateBasedOnRole()
             } else {
                 startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
             }
@@ -36,5 +37,18 @@ class SplashActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val token = sharedPref.getString("token", null)
         return !token.isNullOrEmpty()
+    }
+
+    private fun navigateBasedOnRole() {
+        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val userRole = sharedPref.getString("user_role", "USER")
+
+        val intent = if (userRole == "ADMIN") {
+            Intent(this, AdminDashboardActivity::class.java)
+        } else {
+            Intent(this, MainActivity::class.java)
+        }
+
+        startActivity(intent)
     }
 }
