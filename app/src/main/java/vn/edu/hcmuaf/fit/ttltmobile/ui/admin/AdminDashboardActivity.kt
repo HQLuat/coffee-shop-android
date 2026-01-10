@@ -15,6 +15,7 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutResponse
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityAdminDashboardBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.auth.LoginActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
+import vn.edu.hcmuaf.fit.ttltmobile.ui.admin.AdminUserManagementActivity
 
 class AdminDashboardActivity : BaseActivity<ActivityAdminDashboardBinding>() {
 
@@ -152,7 +153,8 @@ class AdminDashboardActivity : BaseActivity<ActivityAdminDashboardBinding>() {
     }
 
     private fun navigateToUserManagement() {
-        showToast("Chức năng Quản lý người dùng đang phát triển")
+        val intent = Intent(this, AdminUserManagementActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToVoucherManagement() {
