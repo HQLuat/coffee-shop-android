@@ -22,7 +22,8 @@ data class User(
     val email: String? = null,
     val message: String? = null,
     val token: String? = null,
-    val refreshToken: String? = null
+    val refreshToken: String? = null,
+    val role: String? = null
 )
 
 // Logout

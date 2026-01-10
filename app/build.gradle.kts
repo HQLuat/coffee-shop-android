@@ -81,6 +81,7 @@ dependencies {
 
     // BlurView
     implementation(libs.blurview)
+    implementation(libs.androidx.swiperefreshlayout)
 
     // Testing
     testImplementation(libs.junit)

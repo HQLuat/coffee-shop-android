@@ -8,27 +8,27 @@ import retrofit2.http.PUT
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.*
 
 interface AuthApiService {
-    @POST("users")
+    @POST("auth")
     fun register(@Body registerRequest: RegisterRequest): Call<User>
 
-    @POST("users/login")
+    @POST("auth/login")
     fun login(@Body loginRequest: LoginRequest): Call<User>
 
-    @POST("users/logout")
+    @POST("auth/logout")
     fun logout(@Body logoutRequest: LogoutRequest): Call<LogoutResponse>
 
-    @POST("users/resend-verification")
+    @POST("auth/resend-verification")
     fun resendVerification(@Body body: Map<String, String>): Call<Map<String, String>>
 
-    @POST("users/forgot-password")
+    @POST("auth/forgot-password")
     fun forgotPassword(@Body body: Map<String, String>): Call<Map<String, String>>
 
-    @GET("users/profile")
+    @GET("profile")
     fun getProfile(): Call<UserProfile>
 
-    @PUT("users/profile")
+    @PUT("profile")
     fun updateProfile(@Body updateUserProfileRequest: UpdateUserProfileRequest): Call<UserProfile>
 
-    @POST("users/change-password")
+    @POST("profile/change-password")
     fun changePassword(@Body body: Map<String, String>): Call<Map<String, String>>
 }
