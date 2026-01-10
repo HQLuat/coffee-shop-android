@@ -88,33 +88,13 @@ class UserDetailActivity : BaseActivity<ActivityUserDetailBinding>() {
                 // User information
                 tvUserName.text = user.fullName ?: "N/A"
                 tvUserEmail.text = user.email ?: "N/A"
-                tvUserPhone.text = user.phoneNumber ?: "Chưa cập nhật"
-                tvUserAddress.text = user.address ?: "Chưa cập nhật"
 
                 // Role
-                tvUserRole.text = when (user.role) {
+                btnChangeRole.text = when (user.role) {
                     "USER" -> "Người dùng"
                     "ADMIN" -> "Quản trị viên"
                     else -> user.role ?: "N/A"
                 }
-
-                // Status
-                val statusText = when {
-                    user.locked == true -> "Đã khóa"
-                    user.enabled == false -> "Chưa xác thực"
-                    else -> "Hoạt động"
-                }
-                tvUserStatus.text = statusText
-                tvUserStatus.setTextColor(
-                    when {
-                        user.locked == true -> Color.RED
-                        user.enabled == false -> Color.parseColor("#FF9800")
-                        else -> Color.parseColor("#4CAF50")
-                    }
-                )
-
-                tvCreatedAt.text = formatDate(user.createdAt)
-                tvLastLoginAt.text = formatDate(user.lastLoginAt) ?: "Chưa đăng nhập"
 
                 // Button lock
                 btnToggleLock.text = if (user.locked == true) "Mở khóa User" else "Khóa User"

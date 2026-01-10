@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.admin.AdminUserResponse
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ItemAdminUserBinding
 import java.text.SimpleDateFormat
@@ -33,28 +34,28 @@ class AdminUserAdapter(
         with(holder.binding) {
             tvUserName.text = user.fullName ?: "N/A"
             tvUserEmail.text = user.email ?: "N/A"
-            tvUserRole.text = when (user.role) {
-                "USER" -> "Người dùng"
-                "ADMIN" -> "Quản trị viên"
-                else -> user.role ?: "N/A"
+
+            // Status
+            val (statusLabel, textColor, bgRes) = when {
+                user.locked == true -> Triple(
+                    "Đã khóa",
+                    Color.parseColor("#D32F2F"),
+                    R.drawable.bg_status_locked
+                )
+                user.enabled == false -> Triple(
+                    "Chưa xác thực",
+                    Color.parseColor("#F57C00"),
+                    R.drawable.bg_status_unverified
+                )
+                else -> Triple(
+                    "Hoạt động",
+                    Color.parseColor("#388E3C"),
+                    R.drawable.bg_status_active
+                )
             }
-
-            val statusText = when {
-                user.locked == true -> "Đã khóa"
-                user.enabled == false -> "Chưa xác thực"
-                else -> "Hoạt động"
-            }
-            tvUserStatus.text = statusText
-
-            tvUserStatus.setTextColor(
-                when {
-                    user.locked == true -> Color.RED
-                    user.enabled == false -> Color.parseColor("#FF9800")
-                    else -> Color.parseColor("#4CAF50")
-                }
-            )
-
-            tvUserCreatedAt.text = "Tạo: ${formatDate(user.createdAt)}"
+            tvUserStatus.text = statusLabel
+            tvUserStatus.setTextColor(textColor)
+            tvUserStatus.setBackgroundResource(bgRes)
 
             // Button lock/unlock
             btnLock.text = if (user.locked == true) "Mở khóa" else "Khóa"

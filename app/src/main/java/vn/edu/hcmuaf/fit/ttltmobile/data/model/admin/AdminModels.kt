@@ -3,7 +3,7 @@ package vn.edu.hcmuaf.fit.ttltmobile.data.model.admin
 import com.google.gson.annotations.SerializedName
 
 data class AdminMenuItem(
-    val icon: String,
+    val icon: Int,
     val title: String,
     val subtitle: String,
     val action: () -> Unit
