@@ -1,100 +1,169 @@
 package vn.edu.hcmuaf.fit.ttltmobile.data.repository
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-//import com.google.firebase.database.DataSnapshot
-//import com.google.firebase.database.DatabaseError
-//import com.google.firebase.database.FirebaseDatabase
-//import com.google.firebase.database.Query
-//import com.google.firebase.database.ValueEventListener
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.CategoryModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.ProductApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.ReviewRequestBody
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.ReviewModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.product.Product
 
-class MainRepository {
-//    private val firebaseDatabase = FirebaseDatabase.getInstance()
-
-    fun loadCategory(): LiveData<MutableList<CategoryModel>> {
-        val listData = MutableLiveData<MutableList<CategoryModel>>()
-//        val ref = firebaseDatabase.getReference("Category")
-//        ref.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                val list = mutableListOf<CategoryModel>()
-//                for (child in snapshot.children) {
-//                    val item = child.getValue(CategoryModel::class.java)
-//                    item?.let { list.add(it) }
-//                }
-//                listData.value = list
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//        })
-        return listData
-    }
+class MainRepository(private val context: Context) {
+    private val apiService = ApiConfig.createService(ProductApiService::class.java, context)
 
     fun loadPopular(): LiveData<MutableList<ItemModel>> {
         val listData = MutableLiveData<MutableList<ItemModel>>()
-//        val ref = firebaseDatabase.getReference("Popular")
-//        ref.addValueEventListener(object: ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                val list = mutableListOf<ItemModel>()
-//                for (child in snapshot.children) {
-//                    val item = child.getValue(ItemModel::class.java)
-//                    item?.let { list.add(it) }
-//                }
-//                listData.value = list
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//
-//        })
+        apiService.getProducts().enqueue(object : Callback<List<Product>> {
+            override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
+                if (response.isSuccessful) {
+                    val allProducts = response.body() ?: emptyList()
+                    val filtered = allProducts.take(3)
+                    listData.value = mapProductToItem(filtered)
+                }
+            }
+            override fun onFailure(call: Call<List<Product>>, t: Throwable) {
+                listData.value = mutableListOf()
+            }
+        })
         return listData
     }
 
     fun loadSpecial(): LiveData<MutableList<ItemModel>> {
         val listData = MutableLiveData<MutableList<ItemModel>>()
-//        val ref = firebaseDatabase.getReference("Special")
-//        ref.addValueEventListener(object: ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                val list = mutableListOf<ItemModel>()
-//                for (child in snapshot.children) {
-//                    val item = child.getValue(ItemModel::class.java)
-//                    item?.let { list.add(it) }
-//                }
-//                listData.value = list
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//
-//        })
+        apiService.getProducts().enqueue(object : Callback<List<Product>> {
+            override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
+                if (response.isSuccessful) {
+                    val allProducts = response.body() ?: emptyList()
+                    val filtered = if (allProducts.size > 3) allProducts.drop(3) else allProducts
+                    listData.value = mapProductToItem(filtered)
+                }
+            }
+            override fun onFailure(call: Call<List<Product>>, t: Throwable) {
+                listData.value = mutableListOf()
+            }
+        })
         return listData
     }
 
-    fun loadCategoryItems(categoryId: String): LiveData<MutableList<ItemModel>> {
-        val itemsLiveData = MutableLiveData<MutableList<ItemModel>>()
-//        val ref = firebaseDatabase.getReference("Items")
-//        val query: Query = ref.orderByChild("categoryId").equalTo(categoryId)
-//
-//        query.addListenerForSingleValueEvent(object: ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                val list = mutableListOf<ItemModel>()
-//                for (child in snapshot.children) {
-//                    val item = child.getValue(ItemModel::class.java)
-//                    item?.let { list.add(it) }
-//                }
-//
-//                itemsLiveData.value = list
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                TODO("Not yet implemented")
-//            }
-//        })
-        return itemsLiveData
+    fun loadReviews(productId: Long): LiveData<MutableList<ReviewModel>> {
+        val listData = MutableLiveData<MutableList<ReviewModel>>()
+        apiService.getReviewsByProduct(productId).enqueue(object : Callback<List<ReviewModel>> {
+            override fun onResponse(call: Call<List<ReviewModel>>, response: Response<List<ReviewModel>>) {
+                if (response.isSuccessful) {
+                    listData.value = response.body()?.toMutableList() ?: mutableListOf()
+                } else {
+                    listData.value = mutableListOf()
+                }
+            }
+            override fun onFailure(call: Call<List<ReviewModel>>, t: Throwable) {
+                listData.value = mutableListOf()
+            }
+        })
+        return listData
+    }
+
+    fun postReview(productId: Long, rating: Int, comment: String): LiveData<Pair<Boolean, String?>> {
+        val result = MutableLiveData<Pair<Boolean, String?>>()
+        val requestBody = ReviewRequestBody(productId, rating, comment)
+
+        apiService.postReview(requestBody).enqueue(object : Callback<ReviewModel> {
+            override fun onResponse(call: Call<ReviewModel>, response: Response<ReviewModel>) {
+                if (response.isSuccessful) {
+                    result.value = Pair(true, null)
+                } else {
+                    val errorMessage = try {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody != null) {
+                            val json = org.json.JSONObject(errorBody)
+                            json.optString("message", "Gửi đánh giá thất bại")
+                        } else {
+                            "Gửi đánh giá thất bại (${response.code()})"
+                        }
+                    } catch (e: Exception) {
+                        "Gửi đánh giá thất bại"
+                    }
+                    result.value = Pair(false, errorMessage)
+                }
+            }
+            override fun onFailure(call: Call<ReviewModel>, t: Throwable) {
+                result.value = Pair(false, "Không thể kết nối đến server")
+            }
+        })
+        return result
+    }
+
+    // THÊM HÀM UPDATE REVIEW
+    fun updateReview(reviewId: Long, rating: Int, comment: String): LiveData<Pair<Boolean, String?>> {
+        val result = MutableLiveData<Pair<Boolean, String?>>()
+        val requestBody = ReviewRequestBody(0, rating, comment) // productId không cần thiết khi update
+
+        apiService.updateReview(reviewId, requestBody).enqueue(object : Callback<ReviewModel> {
+            override fun onResponse(call: Call<ReviewModel>, response: Response<ReviewModel>) {
+                if (response.isSuccessful) {
+                    result.value = Pair(true, null)
+                } else {
+                    val errorMessage = try {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody != null) {
+                            val json = org.json.JSONObject(errorBody)
+                            json.optString("message", "Cập nhật thất bại")
+                        } else {
+                            "Cập nhật thất bại"
+                        }
+                    } catch (e: Exception) {
+                        "Cập nhật thất bại"
+                    }
+                    result.value = Pair(false, errorMessage)
+                }
+            }
+            override fun onFailure(call: Call<ReviewModel>, t: Throwable) {
+                result.value = Pair(false, "Không thể kết nối đến server")
+            }
+        })
+        return result
+    }
+
+    // THÊM HÀM DELETE REVIEW
+    fun deleteReview(reviewId: Long): LiveData<Pair<Boolean, String?>> {
+        val result = MutableLiveData<Pair<Boolean, String?>>()
+
+        apiService.deleteReview(reviewId).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    result.value = Pair(true, null)
+                } else {
+                    result.value = Pair(false, "Xóa đánh giá thất bại")
+                }
+            }
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                result.value = Pair(false, "Không thể kết nối đến server")
+            }
+        })
+        return result
+    }
+
+    private fun mapProductToItem(products: List<Product>): MutableList<ItemModel> {
+        return products.map { p ->
+            ItemModel().apply {
+                id = p.id
+                title = p.name
+                price = p.price
+                description = p.description ?: "Sản phẩm thơm ngon tuyệt vời"
+                extra = p.category ?: "COFFEE"
+                rating = 5.0
+
+                picUrl.clear()
+                if (p.imageUrl.isNotEmpty()) {
+                    picUrl.add(p.imageUrl)
+                } else {
+                    picUrl.add("https://via.placeholder.com/150")
+                }
+            }
+        }.toMutableList()
     }
 }
