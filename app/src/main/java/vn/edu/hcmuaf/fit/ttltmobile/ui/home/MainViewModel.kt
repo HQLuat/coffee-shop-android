@@ -1,27 +1,16 @@
 package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.CategoryModel
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 import vn.edu.hcmuaf.fit.ttltmobile.data.repository.MainRepository
 
-class MainViewModel: ViewModel() {
-    private val repository = MainRepository()
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    fun loadCategory(): LiveData<MutableList<CategoryModel>> {
-        return repository.loadCategory()
-    }
+    private val repository = MainRepository(application.applicationContext)
 
-    fun loadPopular(): LiveData<MutableList<ItemModel>> {
+    fun getPopular(): LiveData<MutableList<ItemModel>> {
         return repository.loadPopular()
-    }
-
-    fun loadSpecial(): LiveData<MutableList<ItemModel>> {
-        return repository.loadSpecial()
-    }
-
-    fun loadItems(categoryId: String): LiveData<MutableList<ItemModel>> {
-        return repository.loadCategoryItems(categoryId)
     }
 }
