@@ -1,9 +1,15 @@
 package vn.edu.hcmuaf.fit.ttltmobile.ui.profile
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -14,6 +20,7 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.UpdateUserProfileRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.UserProfile
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityPersonalInfoBinding
+import vn.edu.hcmuaf.fit.ttltmobile.utils.CloudinaryHelper
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -26,12 +33,38 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
 
     private var isEditMode = false
     private var currentUserProfile: UserProfile? = null
+    private var selectedImageUri: Uri? = null
+    private var uploadedAvatarUrl: String? = null
+
+    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            selectedImageUri = it
+            // Display selected image
+            Glide.with(this)
+                .load(it)
+                .circleCrop()
+                .placeholder(R.drawable.ic_user_placeholder)
+                .error(R.drawable.ic_user_placeholder)
+                .into(binding.ivAvatar)
+        }
+    }
+
+    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            openImagePicker()
+        } else {
+            showToast("Cần cấp quyền để chọn ảnh")
+        }
+    }
 
     override fun getViewBinding(): ActivityPersonalInfoBinding {
         return ActivityPersonalInfoBinding.inflate(layoutInflater)
     }
 
     override fun createView() {
+        // Initialize Cloudinary
+        CloudinaryHelper.initialize(this)
+
         setupClickListeners()
         loadUserInfo()
 
@@ -64,7 +97,70 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
                     toggleEditMode()
                 }
             }
+
+            // Click to change avatar
+            ivAvatar.setOnClickListener {
+                if (isEditMode) {
+                    checkPermissionAndPickImage()
+                }
+            }
+
+            btnChangeAvatar.setOnClickListener {
+                if (isEditMode) {
+                    checkPermissionAndPickImage()
+                }
+            }
         }
+    }
+
+    private fun getRequiredPermission(): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            Manifest.permission.READ_MEDIA_IMAGES
+        } else {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        }
+    }
+
+    private fun checkPermissionAndPickImage() {
+        val permission = getRequiredPermission()
+        when {
+            ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
+                openImagePicker()
+            }
+            shouldShowRequestPermissionRationale(permission) -> {
+                showToast("Ứng dụng cần quyền truy cập thư viện để thay đổi ảnh đại diện.")
+                permissionLauncher.launch(permission)
+            }
+            else -> {
+                permissionLauncher.launch(permission)
+            }
+        }
+    }
+
+    private fun openImagePicker() {
+        imagePickerLauncher.launch("image/*")
+    }
+
+    private fun uploadImageToCloudinary(imageUri: Uri) {
+        showLoading()
+
+        CloudinaryHelper.uploadImage(
+            context = this,
+            imageUri = imageUri,
+            onSuccess = { url ->
+                hideLoading()
+                uploadedAvatarUrl = url
+                showToast("Upload ảnh thành công")
+                Log.d("PersonalInfo", "Avatar URL: $url")
+            },
+            onError = { error ->
+                hideLoading()
+                showToast("Lỗi upload ảnh: $error")
+                Log.e("PersonalInfo", "Upload error: $error")
+                // Revert to previous avatar
+                currentUserProfile?.avatarUrl?.let { loadAvatar(it) }
+            }
+        )
     }
 
     private fun loadUserInfo() {
@@ -125,7 +221,19 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
 
             // Format created date
             tvCreatedAt.text = userProfile.createdAt?.let { formatDate(it) }
+
+            // Load avatar
+            userProfile.avatarUrl?.let { loadAvatar(it) }
         }
+    }
+
+    private fun loadAvatar(url: String) {
+        Glide.with(this)
+            .load(url)
+            .circleCrop()
+            .placeholder(R.drawable.ic_user_placeholder)
+            .error(R.drawable.ic_user_placeholder)
+            .into(binding.ivAvatar)
     }
 
     private fun formatDate(dateString: String): String {
@@ -146,6 +254,7 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
             edtFullName.isEnabled = isEditMode
             edtPhoneNumber.isEnabled = isEditMode
             edtAddress.isEnabled = isEditMode
+            btnChangeAvatar.visibility = if (isEditMode) android.view.View.VISIBLE else android.view.View.GONE
 
             if (isEditMode) {
                 btnEditSave.text = "Lưu thay đổi"
@@ -155,6 +264,8 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
                 btnEditSave.text = "Chỉnh sửa"
                 btnEditSave.setBackgroundColor(ContextCompat.getColor(this@PersonalInfoActivity, R.color.red))
                 currentUserProfile?.let { displayUserInfo(it) }
+                uploadedAvatarUrl = null
+                selectedImageUri = null
             }
         }
     }
@@ -165,6 +276,7 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
             val newPhoneNumber = edtPhoneNumber.text.toString().trim()
             val newAddress = edtAddress.text.toString().trim()
 
+            // Validate
             if (newFullName.isEmpty()) {
                 edtFullName.error = "Vui lòng nhập họ và tên"
                 edtFullName.requestFocus()
@@ -188,42 +300,66 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
 
             showLoading()
 
-            val request = UpdateUserProfileRequest(newFullName, newPhoneNumber, newAddress)
+            // Check if has new image
+            if (selectedImageUri != null) {
+                CloudinaryHelper.uploadImage(
+                    context = this@PersonalInfoActivity,
+                    imageUri = selectedImageUri!!,
+                    onSuccess = { newUrl ->
+                        Log.d("PersonalInfo", "Upload Cloudinary xong: $newUrl")
+                        callApiUpdateProfile(newFullName, newPhoneNumber, newAddress, newUrl)
+                    },
+                    onError = { errorMsg ->
+                        hideLoading()
+                        showToast("Lỗi upload ảnh: $errorMsg")
+                    }
+                )
+            } else {
+                val currentUrl = currentUserProfile?.avatarUrl
+                callApiUpdateProfile(newFullName, newPhoneNumber, newAddress, currentUrl)
+            }
+        }
+    }
 
-            apiService.updateProfile(request).enqueue(object : Callback<UserProfile> {
-                override fun onResponse(call: Call<UserProfile>, response: Response<UserProfile>) {
-                    hideLoading()
+    private fun callApiUpdateProfile(fullName: String, phoneNumber: String, address: String, avatarUrl: String?) {
+        val request = UpdateUserProfileRequest(
+            fullName = fullName,
+            phoneNumber = phoneNumber,
+            address = address,
+            avatarUrl = avatarUrl
+        )
 
-                    if (response.isSuccessful) {
-                        val updatedProfile = response.body()
-                        if (updatedProfile != null) {
-                            currentUserProfile = updatedProfile
-                            displayUserInfo(updatedProfile)
-                            updateLocalStorage(updatedProfile)
+        apiService.updateProfile(request).enqueue(object : Callback<UserProfile> {
+            override fun onResponse(call: Call<UserProfile>, response: Response<UserProfile>) {
+                hideLoading()
 
-                            toggleEditMode()
-
-                            showToast(updatedProfile.message ?: "Cập nhật thành công")
-                        } else {
-                            showToast("Dữ liệu trả về rỗng")
-                        }
+                if (response.isSuccessful) {
+                    val updatedProfile = response.body()
+                    if (updatedProfile != null) {
+                        currentUserProfile = updatedProfile
+                        displayUserInfo(updatedProfile)
+                        updateLocalStorage(updatedProfile)
+                        toggleEditMode()
+                        showToast(updatedProfile.message ?: "Cập nhật thành công")
                     } else {
-                        try {
-                            val errorJson = response.errorBody()?.string()
-                            showToast("Lỗi: ${response.code()} - $errorJson")
-                        } catch (e: Exception) {
-                            showToast("Lỗi khi cập nhật: ${response.message()}")
-                        }
+                        showToast("Dữ liệu trả về rỗng")
+                    }
+                } else {
+                    try {
+                        val errorJson = response.errorBody()?.string()
+                        showToast("Lỗi: ${response.code()} - $errorJson")
+                    } catch (e: Exception) {
+                        showToast("Lỗi khi cập nhật: ${response.message()}")
                     }
                 }
+            }
 
-                override fun onFailure(call: Call<UserProfile>, t: Throwable) {
-                    hideLoading()
-                    Log.e("PersonalInfoActivity", "Lỗi kết nối: ${t.message}", t)
-                    showToast("Không thể kết nối đến server. Vui lòng kiểm tra mạng.")
-                }
-            })
-        }
+            override fun onFailure(call: Call<UserProfile>, t: Throwable) {
+                hideLoading()
+                Log.e("PersonalInfoActivity", "Lỗi kết nối: ${t.message}", t)
+                showToast("Không thể kết nối đến server. Vui lòng kiểm tra mạng.")
+            }
+        })
     }
 
     private fun updateLocalStorage(userProfile: UserProfile) {
@@ -232,6 +368,7 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
             putString("full_name", userProfile.fullName)
             putString("phone_number", userProfile.phoneNumber)
             putString("address", userProfile.address)
+            putString("avatar_url", userProfile.avatarUrl)
             apply()
         }
     }

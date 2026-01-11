@@ -87,4 +87,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Cloudinary
+    implementation(libs.androidx.activity.result)
+    implementation(libs.cloudinary.android)
 }
