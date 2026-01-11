@@ -80,33 +80,10 @@ class AdminUserManagementActivity : BaseActivity<ActivityAdminUserManagementBind
                 finish()
             }
 
-            // Search
-            btnSearch.setOnClickListener {
-                val keyword = edtSearch.text.toString().trim()
-                if (keyword.isNotEmpty()) {
-                    viewModel.searchUsers(keyword)
-                } else {
-                    viewModel.loadUsers()
-                }
-            }
-
             // Refresh
             swipeRefreshLayout.setOnRefreshListener {
                 viewModel.loadUsers()
                 viewModel.loadStatistics()
-            }
-
-            // Filter buttons
-            btnFilterAll.setOnClickListener {
-                viewModel.loadUsers()
-            }
-
-            btnFilterLocked.setOnClickListener {
-                showToast("Đang phát triển")
-            }
-
-            btnFilterUnverified.setOnClickListener {
-                showToast("Đang phát triển")
             }
         }
     }
@@ -114,27 +91,22 @@ class AdminUserManagementActivity : BaseActivity<ActivityAdminUserManagementBind
     private fun observeViewModel() {
         viewModel.userList.observe(this) { pagedResponse ->
             adapter.updateUsers(pagedResponse.content)
-            binding.tvTotalUsers.text = "Tổng: ${pagedResponse.totalElements} users"
 
             // Hide empty state
             binding.layoutEmptyState.visibility =
                 if (pagedResponse.content.isEmpty()) View.VISIBLE else View.GONE
         }
 
-        viewModel.searchResults.observe(this) { results ->
-            adapter.updateUsers(results)
-            binding.tvTotalUsers.text = "Tìm thấy: ${results.size} users"
-
-            binding.layoutEmptyState.visibility =
-                if (results.isEmpty()) View.VISIBLE else View.GONE
-        }
-
         viewModel.statistics.observe(this) { stats ->
             binding.apply {
-                tvStatTotal.text = stats.totalUsers.toString()
-                tvStatActive.text = stats.activeUsers.toString()
-                tvStatLocked.text = stats.lockedUsers.toString()
-                tvStatUnverified.text = stats.unverifiedUsers.toString()
+                cardTotal.tvStatValue.text = stats.totalUsers.toString()
+                cardTotal.tvStatLabel.text = "Tổng số"
+
+                cardActive.tvStatValue.text = stats.activeUsers.toString()
+                cardActive.tvStatLabel.text = "Hoạt động"
+
+                cardLocked.tvStatValue.text = stats.lockedUsers.toString()
+                cardLocked.tvStatLabel.text = "Đã khóa"
             }
         }
 

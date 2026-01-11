@@ -142,6 +142,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
             putLong("user_id", userResponse.id ?: 0L)
             putString("full_name", userResponse.fullName)
             putString("email", userResponse.email)
+            putString("avatar_url", userResponse.avatarUrl)
             putString("token", userResponse.token)
             putString("refresh_token", userResponse.refreshToken)
             putString("user_role", userResponse.role)

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.admin.AdminMenuItem
@@ -48,12 +49,12 @@ class AdminDashboardActivity : BaseActivity<ActivityAdminDashboardBinding>() {
 
     private fun setupMenuGrid() {
         val menuItems = listOf(
-            AdminMenuItem("📦", "Sản phẩm", "Quản lý menu") { navigateToProductManagement() },
-            AdminMenuItem("📋", "Đơn hàng", "Xem đơn hàng") { navigateToOrderManagement() },
-            AdminMenuItem("👥", "Người dùng", "Quản lý user") { navigateToUserManagement() },
-            AdminMenuItem("🎫", "Voucher", "Mã giảm giá") { navigateToVoucherManagement() },
-            AdminMenuItem("📊", "Thống kê", "Báo cáo doanh thu") { navigateToStatistics() },
-            AdminMenuItem("⭐", "Đánh giá", "Quản lý review") { navigateToReviewManagement() }
+            AdminMenuItem(R.drawable.ic_product, "Sản phẩm", "Quản lý menu") { navigateToProductManagement() },
+            AdminMenuItem(R.drawable.ic_shopping_bag, "Đơn hàng", "Xem đơn hàng") { navigateToOrderManagement() },
+            AdminMenuItem(R.drawable.ic_role, "Người dùng", "Quản lý user") { navigateToUserManagement() },
+            AdminMenuItem(R.drawable.ic_voucher, "Voucher", "Mã giảm giá") { navigateToVoucherManagement() },
+            AdminMenuItem(R.drawable.ic_statistic, "Thống kê", "Báo cáo doanh thu") { navigateToStatistics() },
+            AdminMenuItem(R.drawable.ic_comment, "Đánh giá", "Quản lý review") { navigateToReviewManagement() }
         )
 
         menuAdapter = AdminMenuAdapter(menuItems)
