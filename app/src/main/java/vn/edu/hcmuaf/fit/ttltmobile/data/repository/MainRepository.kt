@@ -49,7 +49,46 @@ class MainRepository(private val context: Context) {
         })
         return listData
     }
+    // THÊM HÀM MỚI - ADD TO CART
+    fun addToCart(productId: Long, quantity: Int): LiveData<Pair<Boolean, String?>> {
+        val result = MutableLiveData<Pair<Boolean, String?>>()
 
+        // Tạo request body với data class
+        val requestBody = vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AddToCartRequestBody(
+            productId = productId,
+            quantity = quantity
+        )
+
+        apiService.addToCart(requestBody).enqueue(object : Callback<vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartResponseBody> {
+            override fun onResponse(
+                call: Call<vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartResponseBody>,
+                response: Response<vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartResponseBody>
+            ) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    val message = body?.message ?: "Thêm vào giỏ hàng thành công"
+                    result.value = Pair(true, message)
+                } else {
+                    val errorMessage = try {
+                        val errorBody = response.errorBody()?.string()
+                        if (errorBody != null) {
+                            val json = org.json.JSONObject(errorBody)
+                            json.optString("message", "Thêm vào giỏ hàng thất bại")
+                        } else {
+                            "Thêm vào giỏ hàng thất bại"
+                        }
+                    } catch (e: Exception) {
+                        "Thêm vào giỏ hàng thất bại"
+                    }
+                    result.value = Pair(false, errorMessage)
+                }
+            }
+            override fun onFailure(call: Call<vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartResponseBody>, t: Throwable) {
+                result.value = Pair(false, "Không thể kết nối đến server")
+            }
+        })
+        return result
+    }
     fun loadReviews(productId: Long): LiveData<MutableList<ReviewModel>> {
         val listData = MutableLiveData<MutableList<ReviewModel>>()
         apiService.getReviewsByProduct(productId).enqueue(object : Callback<List<ReviewModel>> {

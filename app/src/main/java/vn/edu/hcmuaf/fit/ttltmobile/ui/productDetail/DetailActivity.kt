@@ -332,6 +332,32 @@ class DetailActivity : AppCompatActivity() {
                     updateTotalPrice()
                 }
             }
+
+            // THÊM XỬ LÝ NÚT MUA NGAY
+            addToCartBtn.setOnClickListener {
+                addToCart()
+            }
         }
+    }
+
+    // THÊM HÀM MỚI
+    private fun addToCart() {
+        if (item.numberInCart <= 0) {
+            Toast.makeText(this, "Vui lòng chọn số lượng", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Gọi API thêm vào giỏ hàng
+        repository.addToCart(item.id, item.numberInCart).observe(this, Observer { result ->
+            val (success, message) = result
+            if (success) {
+                Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show()
+                // Optional: Chuyển về màn hình giỏ hàng
+                // val intent = Intent(this, CartActivity::class.java)
+                // startActivity(intent)
+            } else {
+                Toast.makeText(this, message ?: "Thêm vào giỏ hàng thất bại", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 }
