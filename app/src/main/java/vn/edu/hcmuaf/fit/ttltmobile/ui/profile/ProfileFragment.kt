@@ -2,13 +2,21 @@ package vn.edu.hcmuaf.fit.ttltmobile.ui.profile
 
 import android.content.Context
 import android.content.Intent
+import com.bumptech.glide.request.target.Target
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutRequest
@@ -41,11 +49,37 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
         val sharedPref = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val fullName = sharedPref.getString("full_name", "Tên người dùng")
         val email = sharedPref.getString("email", "email@example.com")
+        val avatarUrl = sharedPref.getString("avatar_url", null)
 
         binding.apply {
             tvFullName.text = fullName
             tvEmail.text = email
+
+            // Load avatar
+            if (!avatarUrl.isNullOrEmpty()) {
+                ivAvatar.background = null
+                ivAvatar.setPadding(0, 0, 0, 0)
+                ivAvatar.imageTintList = null
+                ivAvatar.clearColorFilter()
+
+                Glide.with(this@ProfileFragment)
+                    .load(avatarUrl.trim())
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_user_placeholder)
+                    .error(R.drawable.ic_user_placeholder)
+                    .into(ivAvatar)
+            } else {
+                ivAvatar.setImageResource(R.drawable.ic_person)
+                ivAvatar.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white))
+                val padding = dpToPx(22)
+                ivAvatar.setPadding(padding, padding, padding, padding)
+            }
         }
+    }
+
+    private fun dpToPx(dp: Int): Int {
+        val density = resources.displayMetrics.density
+        return (dp * density).toInt()
     }
 
     private fun setupClickListeners() {

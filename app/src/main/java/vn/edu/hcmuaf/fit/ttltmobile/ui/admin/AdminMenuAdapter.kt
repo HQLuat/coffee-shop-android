@@ -26,7 +26,7 @@ class AdminMenuAdapter(
         val item = items[position]
 
         with(holder.binding) {
-            tvMenuIcon.text = item.icon
+            ivMenuIcon.setImageResource(item.icon)
             tvMenuTitle.text = item.title
             tvMenuSubtitle.text = item.subtitle
 
