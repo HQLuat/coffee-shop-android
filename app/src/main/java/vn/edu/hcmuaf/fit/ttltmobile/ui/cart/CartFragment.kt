@@ -111,10 +111,10 @@ class CartFragment: BaseFragment<FragmentCartBinding>() {
     private fun showEmptyCart() {
         binding.apply {
             listView.visibility = View.GONE
-            totalFeetxt.text = "₫0"
-            taxTxt.text = "₫0"
-            deliveryTxt.text = "₫0"
-            totalTxt.text = "₫0"
+            totalFeetxt.text = "0₫"
+            taxTxt.text = "0₫"
+            deliveryTxt.text = "0₫"
+            totalTxt.text = "0₫"
             checkOutBtn.isEnabled = false
         }
         showToast("Giỏ hàng trống")
@@ -128,10 +128,10 @@ class CartFragment: BaseFragment<FragmentCartBinding>() {
         val total = subtotal.add(tax).add(delivery)
 
         binding.apply {
-            totalFeetxt.text = "₫${String.format("%,d", subtotal.toLong())}"
-            taxTxt.text = "₫${String.format("%,d", tax.toLong())}"
-            deliveryTxt.text = "₫${String.format("%,d", delivery.toLong())}"
-            totalTxt.text = "₫${String.format("%,d", total.toLong())}"
+            totalFeetxt.text = "${String.format("%,d", subtotal.toLong())}₫"
+            taxTxt.text = "${String.format("%,d", tax.toLong())}₫"
+            deliveryTxt.text = "${String.format("%,d", delivery.toLong())}₫"
+            totalTxt.text = "${String.format("%,d", total.toLong())}₫"
 
             listView.visibility = View.VISIBLE
             checkOutBtn.isEnabled = true
