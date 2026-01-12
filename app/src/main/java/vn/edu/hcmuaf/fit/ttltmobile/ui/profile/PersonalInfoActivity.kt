@@ -10,6 +10,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -17,10 +21,9 @@ import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.UpdateUserProfileRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.UserProfile
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityPersonalInfoBinding
-import vn.edu.hcmuaf.fit.ttltmobile.utils.CloudinaryHelper
+import vn.edu.hcmuaf.fit.ttltmobile.utils.MultipartHelper
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -34,11 +37,24 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
     private var isEditMode = false
     private var currentUserProfile: UserProfile? = null
     private var selectedImageUri: Uri? = null
-    private var uploadedAvatarUrl: String? = null
 
     private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
+            // Validate image
+            if (!MultipartHelper.isValidImageFile(this, it)) {
+                showToast("Vui lòng chọn file ảnh hợp lệ")
+                return@registerForActivityResult
+            }
+
+            // Check file size (max 5MB)
+            val fileSizeMB = MultipartHelper.getFileSizeInMB(this, it)
+            if (fileSizeMB > 5) {
+                showToast("Kích thước ảnh không được vượt quá 5MB")
+                return@registerForActivityResult
+            }
+
             selectedImageUri = it
+
             // Display selected image
             Glide.with(this)
                 .load(it)
@@ -62,9 +78,6 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
     }
 
     override fun createView() {
-        // Initialize Cloudinary
-        CloudinaryHelper.initialize(this)
-
         setupClickListeners()
         loadUserInfo()
 
@@ -139,28 +152,6 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
 
     private fun openImagePicker() {
         imagePickerLauncher.launch("image/*")
-    }
-
-    private fun uploadImageToCloudinary(imageUri: Uri) {
-        showLoading()
-
-        CloudinaryHelper.uploadImage(
-            context = this,
-            imageUri = imageUri,
-            onSuccess = { url ->
-                hideLoading()
-                uploadedAvatarUrl = url
-                showToast("Upload ảnh thành công")
-                Log.d("PersonalInfo", "Avatar URL: $url")
-            },
-            onError = { error ->
-                hideLoading()
-                showToast("Lỗi upload ảnh: $error")
-                Log.e("PersonalInfo", "Upload error: $error")
-                // Revert to previous avatar
-                currentUserProfile?.avatarUrl?.let { loadAvatar(it) }
-            }
-        )
     }
 
     private fun loadUserInfo() {
@@ -264,7 +255,6 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
                 btnEditSave.text = "Chỉnh sửa"
                 btnEditSave.setBackgroundColor(ContextCompat.getColor(this@PersonalInfoActivity, R.color.red))
                 currentUserProfile?.let { displayUserInfo(it) }
-                uploadedAvatarUrl = null
                 selectedImageUri = null
             }
         }
@@ -299,37 +289,40 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
             }
 
             showLoading()
-
-            // Check if has new image
-            if (selectedImageUri != null) {
-                CloudinaryHelper.uploadImage(
-                    context = this@PersonalInfoActivity,
-                    imageUri = selectedImageUri!!,
-                    onSuccess = { newUrl ->
-                        Log.d("PersonalInfo", "Upload Cloudinary xong: $newUrl")
-                        callApiUpdateProfile(newFullName, newPhoneNumber, newAddress, newUrl)
-                    },
-                    onError = { errorMsg ->
-                        hideLoading()
-                        showToast("Lỗi upload ảnh: $errorMsg")
-                    }
-                )
-            } else {
-                val currentUrl = currentUserProfile?.avatarUrl
-                callApiUpdateProfile(newFullName, newPhoneNumber, newAddress, currentUrl)
-            }
+            callApiUpdateProfile(newFullName, newPhoneNumber, newAddress)
         }
     }
 
-    private fun callApiUpdateProfile(fullName: String, phoneNumber: String, address: String, avatarUrl: String?) {
-        val request = UpdateUserProfileRequest(
-            fullName = fullName,
-            phoneNumber = phoneNumber,
-            address = address,
-            avatarUrl = avatarUrl
-        )
+    private fun callApiUpdateProfile(fullName: String, phoneNumber: String, address: String) {
+        // Create requestBody
+        val fullNameBody = fullName.toRequestBody("text/plain".toMediaTypeOrNull())
+        val phoneNumberBody = phoneNumber.toRequestBody("text/plain".toMediaTypeOrNull())
+        val addressBody = address.toRequestBody("text/plain".toMediaTypeOrNull())
 
-        apiService.updateProfile(request).enqueue(object : Callback<UserProfile> {
+        // Create MultipartBody.Part for avatar
+        val avatarPart: MultipartBody.Part? = selectedImageUri?.let { uri ->
+            try {
+                val file = MultipartHelper.uriToFile(this, uri)
+                if (file != null) {
+                    val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                    MultipartBody.Part.createFormData("avatar", file.name, requestFile)
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("PersonalInfo", "Error creating file from URI: ${e.message}")
+                null
+            }
+        }
+
+        // Call API
+        apiService.updateProfile(
+            fullName = fullNameBody,
+            phoneNumber = phoneNumberBody,
+            address = addressBody,
+            avatar = avatarPart,
+            deleteAvatar = null
+        ).enqueue(object : Callback<UserProfile> {
             override fun onResponse(call: Call<UserProfile>, response: Response<UserProfile>) {
                 hideLoading()
 
@@ -347,9 +340,11 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
                 } else {
                     try {
                         val errorJson = response.errorBody()?.string()
-                        showToast("Lỗi: ${response.code()} - $errorJson")
+                        val jsonObject = JSONObject(errorJson ?: "{}")
+                        val errorMessage = jsonObject.optString("message", "Lỗi khi cập nhật")
+                        showToast(errorMessage)
                     } catch (e: Exception) {
-                        showToast("Lỗi khi cập nhật: ${response.message()}")
+                        showToast("Lỗi khi cập nhật: ${response.code()}")
                     }
                 }
             }
@@ -357,11 +352,12 @@ class PersonalInfoActivity : BaseActivity<ActivityPersonalInfoBinding>() {
             override fun onFailure(call: Call<UserProfile>, t: Throwable) {
                 hideLoading()
                 Log.e("PersonalInfoActivity", "Lỗi kết nối: ${t.message}", t)
-                showToast("Không thể kết nối đến server. Vui lòng kiểm tra mạng.")
+                showToast("Không thể kết nối đến server")
             }
         })
     }
 
+    // Helpers
     private fun updateLocalStorage(userProfile: UserProfile) {
         val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
