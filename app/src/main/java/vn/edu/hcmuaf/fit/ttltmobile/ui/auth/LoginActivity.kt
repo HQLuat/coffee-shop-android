@@ -1,5 +1,4 @@
 package vn.edu.hcmuaf.fit.ttltmobile.ui.auth
-
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -16,7 +15,6 @@ import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityLoginBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.home.MainActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
 import vn.edu.hcmuaf.fit.ttltmobile.ui.admin.AdminDashboardActivity
-import vn.edu.hcmuaf.fit.ttltmobile.utils.TokenManager  // THÊM IMPORT NÀY
 
 class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
@@ -24,17 +22,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
         ApiConfig.getAuthService()
     }
 
-    // THÊM BIẾN TOKENMANAGER
-    private lateinit var tokenManager: TokenManager
-
     override fun getViewBinding(): ActivityLoginBinding {
         return ActivityLoginBinding.inflate(layoutInflater)
     }
 
     override fun createView() {
-        // KHỞI TẠO TOKENMANAGER
-        tokenManager = TokenManager(this)
-
         setupClickListeners()
         handleRegisteredEmail()
         handleSessionExpired()
@@ -144,31 +136,30 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
         })
     }
 
-    // SỬA HÀM NÀY - DÙNG TOKENMANAGER
     private fun saveUserData(userResponse: User) {
-        // Lưu tokens qua TokenManager
-        tokenManager.saveTokens(
-            userResponse.token ?: "",
-            userResponse.refreshToken ?: ""
-        )
-
-        // Lưu user_id qua TokenManager
-        tokenManager.saveUserId(userResponse.id ?: 0L)
-
-        // Lưu các thông tin khác vào SharedPreferences (giữ nguyên)
         val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
-            putLong("user_id", userResponse.id ?: 0L)  // Vẫn lưu để backward compatible
+            putLong("user_id", userResponse.id ?: 0L)
             putString("full_name", userResponse.fullName)
             putString("email", userResponse.email)
+
+            putString("token", userResponse.token)
+            putString("refresh_token", userResponse.refreshToken)
             putString("user_role", userResponse.role)
-            // Token đã được lưu qua TokenManager rồi, không cần lưu lại ở đây
             apply()
         }
     }
 
     private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
+        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val userRole = sharedPref.getString("user_role", "USER")
+
+        val intent = if (userRole == "ADMIN") {
+            Intent(this, AdminDashboardActivity::class.java)
+        } else {
+            Intent(this, MainActivity::class.java)
+        }
+
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
