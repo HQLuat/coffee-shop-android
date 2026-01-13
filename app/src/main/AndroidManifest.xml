@@ -69,6 +69,25 @@
         <activity
             android:name=".ui.home.MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.checkout.CheckoutActivity"
+            android:exported="false"
+            android:screenOrientation="fullSensor"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.order.OrderDetailActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.admin.orders.AdminOrdersActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".ui.order.OrderHistoryActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
