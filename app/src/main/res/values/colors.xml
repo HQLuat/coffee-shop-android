@@ -13,4 +13,19 @@
     <color name="grey">#9E9E9E</color>
     <color name="lightGrey">#E0E0E0</color>
     <color name="red">#E53935</color>
+
+    <!-- Additional colors for order management -->
+    <color name="blue">#2196F3</color>
+    <color name="teal">#009688</color>
+    <color name="green">#4CAF50</color>
+
+    <!-- Status colors -->
+    <color name="status_pending">#FF9800</color>
+    <color name="status_confirmed">#2196F3</color>
+    <color name="status_preparing">#9C27B0</color>
+    <color name="status_delivering">#009688</color>
+    <color name="status_completed">#4CAF50</color>
+    <color name="status_cancelled">#F44336</color>
+    <color name="status_refunded">#808080</color>
+    <color name="holo_green_dark">#ff669900</color>
 </resources>

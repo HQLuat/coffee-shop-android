@@ -23,6 +23,7 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LogoutResponse
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.FragmentProfileBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.auth.LoginActivity
+import vn.edu.hcmuaf.fit.ttltmobile.ui.order.OrderHistoryActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseFragment
 
 class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
@@ -93,7 +94,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
             }
 
             layoutOrders.setOnClickListener {
-                showToast("Chức năng đang phát triển")
+                navigateToOrderHistory()
             }
 
             btnLogout.setOnClickListener {
@@ -176,4 +177,9 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>() {
         val intent = Intent(requireContext(), ChangePasswordActivity::class.java)
         startActivity(intent)
     }
+    private fun navigateToOrderHistory() {
+        val intent = Intent(requireContext(), OrderHistoryActivity::class.java)
+        startActivity(intent)
+    }
+
 }
