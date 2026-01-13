@@ -2,6 +2,7 @@ package vn.edu.hcmuaf.fit.ttltmobile.data.api.service
 
 import retrofit2.Call
 import retrofit2.http.*
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.admin.PageResponse
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.admin.*
 
 interface AdminApiService {

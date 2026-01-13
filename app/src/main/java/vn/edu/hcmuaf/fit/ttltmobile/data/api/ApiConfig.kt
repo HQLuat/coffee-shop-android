@@ -8,8 +8,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import vn.edu.hcmuaf.fit.ttltmobile.BuildConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AdminApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AdminProductApiService
-import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
-import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.ProductApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AdminOrderApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
@@ -84,7 +82,8 @@ object ApiConfig {
     // Admin Product Service
     fun getAdminProductService(context: Context): AdminProductApiService {
         return createService(AdminProductApiService::class.java, context)
-    // Admin Order Service
+        // Admin Order Service
+    }
     fun getAdminOrderService(context: Context): AdminOrderApiService {
         return getRetrofit(context).create(AdminOrderApiService::class.java)
     }

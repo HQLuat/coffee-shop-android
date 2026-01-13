@@ -101,7 +101,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/seeAllPopular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="See all"
@@ -155,6 +155,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/seeAllSpecial"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="See all"
