@@ -2,15 +2,15 @@ package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 import vn.edu.hcmuaf.fit.ttltmobile.data.repository.MainRepository
 
+// Đổi từ ViewModel sang AndroidViewModel để lấy được context (application)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = MainRepository(application.applicationContext)
+    // Tự khởi tạo Repository bên trong luôn
+    private val repository: MainRepository = MainRepository(application)
 
-    fun getPopular(): LiveData<MutableList<ItemModel>> {
-        return repository.loadPopular()
-    }
+    fun getPopular() = repository.loadPopular()
+
+    fun getByCategory(cat: String) = repository.loadByCategory(cat)
 }

@@ -1,56 +1,56 @@
 package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ViewholderCategoryBinding
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.CategoryModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.product.ProductConstants
 
-class CategoryAdapter(val items: MutableList<CategoryModel>) :
+class CategoryAdapter(private val items: Array<String>) :
     RecyclerView.Adapter<CategoryAdapter.Viewholder>() {
 
-    private lateinit var context: Context
     private var selectedPosition = -1
-    private var lastSelectedPosition = -1
 
     class Viewholder(val binding: ViewholderCategoryBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Viewholder {
-        context = parent.context
-        val binding = ViewholderCategoryBinding.inflate(LayoutInflater.from(context), parent, false)
+        val binding = ViewholderCategoryBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
         return Viewholder(binding)
     }
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
-        val item = items[position]
-        holder.binding.titleCat.text = item.title
+        val label = items[position] // Đây là "Cà phê", "Trà"...
 
-        holder.binding.root.setOnClickListener() {
-            lastSelectedPosition = selectedPosition
-            selectedPosition = position
-            notifyItemChanged(lastSelectedPosition)
-            notifyItemChanged(selectedPosition)
+        holder.binding.titleCat.text = label
 
-            Handler(Looper.getMainLooper()).postDelayed({
-                val intent = Intent(context, ItemListActivity::class.java).apply {
-                    putExtra("id", item.id.toString())
-                    putExtra("title", item.title)
-                }
-                ContextCompat.startActivity(context, intent, null)
-            }, 500)
-        }
+        holder.binding.root.setOnClickListener {
+            val currentPos = holder.bindingAdapterPosition
+            if (currentPos != RecyclerView.NO_POSITION) {
+                val lastSelected = selectedPosition
+                selectedPosition = currentPos
+                notifyItemChanged(lastSelected)
+                notifyItemChanged(selectedPosition)
 
-        if (selectedPosition == position) {
-            holder.binding.titleCat.setBackgroundResource(R.drawable.brown_bg)
-        } else {
-            holder.binding.titleCat.setBackgroundResource(R.drawable.dark_brown_bg)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    val context = holder.itemView.context
+                    val intent = Intent(context, ItemListActivity::class.java).apply {
+                        // Lấy Label gửi đi để hiện tiêu đề, lấy Enum để lọc DB
+                        val selectedLabel = items[currentPos]
+                        val selectedEnum = ProductConstants.getCategoryEnum(selectedLabel)
+
+                        putExtra("title", selectedLabel)
+                        putExtra("enum", selectedEnum)
+                    }
+                    context.startActivity(intent)
+                }, 200)
+            }
         }
     }
 
