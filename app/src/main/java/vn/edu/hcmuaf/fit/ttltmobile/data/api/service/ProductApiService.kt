@@ -29,6 +29,9 @@ interface ProductApiService {
     // SỬA ENDPOINT ADD TO CART
     @POST("cart/add")
     fun addToCart(@Body request: AddToCartRequestBody): Call<CartResponseBody>
+
+    @GET("products/{id}/variants")
+    fun getProductVariants(@Path("id") productId: Long): Call<List<Product>>
 }
 
 // DATA CLASS CHO REVIEW
