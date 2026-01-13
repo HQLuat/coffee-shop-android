@@ -1,43 +1,53 @@
 package vn.edu.hcmuaf.fit.ttltmobile.ui.home
 
-import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import vn.edu.hcmuaf.fit.ttltmobile.ui.productDetail.DetailActivity
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.product.Product
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ViewholderPopularBinding
-import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
+import vn.edu.hcmuaf.fit.ttltmobile.ui.productDetail.DetailActivity
 
-class PopularAdapter(val items: MutableList<ItemModel>):
+class PopularAdapter(private val items: MutableList<Product>) :
     RecyclerView.Adapter<PopularAdapter.Viewholder>() {
-        lateinit var context: Context
 
-    class Viewholder (val binding: ViewholderPopularBinding):
-        RecyclerView.ViewHolder(binding.root)
+    class Viewholder(val binding: ViewholderPopularBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Viewholder {
-        context = parent.context
         val binding = ViewholderPopularBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return Viewholder(binding)
     }
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
-        holder.binding.titleTxt.text = items[position].title
-        holder.binding.extraTxt.text = items[position].extra
-        holder.binding.priceTxt.text = "$" + items[position].price.toString()
+        val item = items[position]
+        val context = holder.itemView.context
 
+        // 1. Hiển thị Tên sản phẩm
+        holder.binding.titleTxt.text = item.name
+
+        // 2. Hiển thị Giá (Định dạng có dấu chấm phân cách, ví dụ: 50.000đ)
+        holder.binding.priceTxt.text = String.format("%,.0fđ", item.price)
+
+        // 3. Sử dụng extraTxt để hiển thị Rating
+        // Giúp khách hàng thấy ngay đánh giá mà không cần bấm vào xem
+        holder.binding.extraTxt.text = "${item.description}"
+
+        // 4. Load ảnh bằng Glide
+        // Thêm placeholder để tránh bị trắng hình khi mạng chậm
         Glide.with(context)
-            .load(items[position].picUrl[0])
+            .load(item.imageUrl)
+            .placeholder(android.R.drawable.progress_horizontal)
+            .error(android.R.drawable.stat_notify_error)
             .into(holder.binding.pic)
 
+        // 5. Sự kiện Click sang màn hình Chi tiết
         holder.itemView.setOnClickListener {
-            context.startActivity(
-                Intent(context, DetailActivity::class.java).apply {
-                    putExtra("object", items[position])
-                }
-            )
+            val intent = Intent(context, DetailActivity::class.java)
+            // Lưu ý: Object 'item' (Product) phải được implement Serializable
+            // để truyền dữ liệu đi không bị crash
+            intent.putExtra("object", item)
+            context.startActivity(intent)
         }
     }
 

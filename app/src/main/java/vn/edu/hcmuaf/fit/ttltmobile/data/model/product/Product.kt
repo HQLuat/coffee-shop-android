@@ -1,10 +1,17 @@
 package vn.edu.hcmuaf.fit.ttltmobile.data.model.product
 
-import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Product(
-    val id: String,
+    val id: Long,
     val name: String,
     val price: Double,
-    @SerializedName("imageUrl") val imageUrl: String
-)
+    val description: String?,
+    val imageUrl: String,
+    val category: String,
+    val size: String,
+    val rating: Double,
+
+    // cho gio hang
+    var numberInCart: Int = 0
+) : Serializable
