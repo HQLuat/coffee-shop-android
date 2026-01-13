@@ -8,13 +8,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiConfig
-import vn.edu.hcmuaf.fit.ttltmobile.data.api.ApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.LoginRequest
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.auth.User
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityLoginBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.home.MainActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
+import vn.edu.hcmuaf.fit.ttltmobile.ui.admin.AdminDashboardActivity
 
 class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 
@@ -142,14 +142,24 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
             putLong("user_id", userResponse.id ?: 0L)
             putString("full_name", userResponse.fullName)
             putString("email", userResponse.email)
+            putString("avatar_url", userResponse.avatarUrl)
             putString("token", userResponse.token)
             putString("refresh_token", userResponse.refreshToken)
+            putString("user_role", userResponse.role)
             apply()
         }
     }
 
     private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
+        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val userRole = sharedPref.getString("user_role", "USER")
+
+        val intent = if (userRole == "ADMIN") {
+            Intent(this, AdminDashboardActivity::class.java)
+        } else {
+            Intent(this, MainActivity::class.java)
+        }
+
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()

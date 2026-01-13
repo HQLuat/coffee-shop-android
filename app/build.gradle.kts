@@ -32,6 +32,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -67,7 +68,8 @@ dependencies {
 
     // RecyclerView
     implementation(libs.androidx.recyclerview)
-
+// Thêm dòng này (desugaring cho java.time, java.util.stream, v.v.)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     // Retrofit - REST API
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
@@ -81,9 +83,14 @@ dependencies {
 
     // BlurView
     implementation(libs.blurview)
+    implementation(libs.androidx.swiperefreshlayout)
 
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Cloudinary
+    implementation(libs.androidx.activity.result)
+    implementation(libs.cloudinary.android)
 }

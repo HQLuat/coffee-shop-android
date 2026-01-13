@@ -20,9 +20,11 @@ data class User(
     val id: Long? = null,
     val fullName: String? = null,
     val email: String? = null,
+    val avatarUrl: String? = null,
     val message: String? = null,
     val token: String? = null,
-    val refreshToken: String? = null
+    val refreshToken: String? = null,
+    val role: String? = null
 )
 
 // Logout
@@ -45,6 +47,8 @@ data class UserProfile(
     val phoneNumber: String?,
     @SerializedName("address")
     val address: String?,
+    @SerializedName("avatarUrl")
+    val avatarUrl: String?,
     @SerializedName("role")
     val role: String?,
     @SerializedName("enabled")
@@ -63,6 +67,8 @@ data class UpdateUserProfileRequest(
     val phoneNumber: String,
     @SerializedName("address")
     val address: String,
+    @SerializedName("avatarUrl")
+    val avatarUrl: String? = null,
     @SerializedName("currentPassword")
     val currentPassword: String? = null,
     @SerializedName("newPassword")
