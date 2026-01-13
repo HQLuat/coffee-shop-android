@@ -146,7 +146,8 @@ class AdminDashboardActivity : BaseActivity<ActivityAdminDashboardBinding>() {
 
     // Navigation methods
     private fun navigateToProductManagement() {
-        showToast("Chức năng Quản lý sản phẩm đang phát triển")
+        val intent = Intent(this, AdminProductActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToOrderManagement() {

@@ -7,8 +7,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import vn.edu.hcmuaf.fit.ttltmobile.BuildConfig
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AdminApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AdminProductApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.ProductApiService
 import java.util.concurrent.TimeUnit
 
 object ApiConfig {
@@ -68,5 +70,10 @@ object ApiConfig {
     // Admin Service
     fun getAdminService(context: Context): AdminApiService {
         return getRetrofit(context).create(AdminApiService::class.java)
+    }
+
+    // Admin Product Service
+    fun getAdminProductService(context: Context): AdminProductApiService {
+        return createService(AdminProductApiService::class.java, context)
     }
 }
