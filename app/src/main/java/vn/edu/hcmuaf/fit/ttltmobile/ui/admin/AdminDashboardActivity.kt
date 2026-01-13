@@ -167,6 +167,7 @@ class AdminDashboardActivity : BaseActivity<ActivityAdminDashboardBinding>() {
     }
 
     private fun navigateToReviewManagement() {
-        showToast("Chức năng Quản lý đánh giá đang phát triển")
+        val intent = Intent(this, AdminReviewManagementActivity::class.java)
+        startActivity(intent)
     }
 }
