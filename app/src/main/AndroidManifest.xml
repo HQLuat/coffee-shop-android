@@ -29,6 +29,11 @@
         <activity
             android:name=".ui.admin.AdminDashboardActivity"
             android:exported="false" />
+        <!-- THÊM DÒNG NÀY -->
+        <activity
+            android:name=".ui.admin.AdminReviewManagementActivity"
+            android:exported="false"
+            android:theme="@style/Theme.TTLTMobile" />
         <activity
             android:name=".ui.profile.ChangePasswordActivity"
             android:exported="false" />

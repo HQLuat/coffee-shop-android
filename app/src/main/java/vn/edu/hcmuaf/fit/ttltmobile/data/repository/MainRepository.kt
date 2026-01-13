@@ -205,4 +205,22 @@ class MainRepository(private val context: Context) {
             }
         }.toMutableList()
     }
+
+    // Thêm hàm mới
+    fun loadProductVariants(productId: Long): LiveData<List<Product>> {
+        val listData = MutableLiveData<List<Product>>()
+        apiService.getProductVariants(productId).enqueue(object : Callback<List<Product>> {
+            override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
+                if (response.isSuccessful) {
+                    listData.value = response.body() ?: emptyList()
+                } else {
+                    listData.value = emptyList()
+                }
+            }
+            override fun onFailure(call: Call<List<Product>>, t: Throwable) {
+                listData.value = emptyList()
+            }
+        })
+        return listData
+    }
 }

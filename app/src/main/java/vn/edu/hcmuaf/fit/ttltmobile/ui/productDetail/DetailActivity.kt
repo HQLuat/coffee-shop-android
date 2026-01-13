@@ -21,6 +21,7 @@ import eightbitlab.com.blurview.RenderScriptBlur
 import vn.edu.hcmuaf.fit.ttltmobile.R
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.ReviewModel
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.product.Product
 import vn.edu.hcmuaf.fit.ttltmobile.data.repository.MainRepository
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityDetailBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.home.SizeAdapter
@@ -33,11 +34,15 @@ import java.util.Locale
 class DetailActivity : AppCompatActivity() {
     lateinit var binding: ActivityDetailBinding
     private lateinit var item: ItemModel
-    private lateinit var managmentCart: ManagmentCart
     private lateinit var repository: MainRepository
     private lateinit var tokenManager: TokenManager
     private var selectedRating: Int = 0
-    private var hasUserReviewed: Boolean = false  // THÊM BIẾN NÀY
+    private var hasUserReviewed: Boolean = false
+
+    // THAY ĐỔI: Lưu danh sách variants
+    private var productVariants: List<Product> = emptyList()
+    private var selectedVariant: Product? = null
+    private var quantity: Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,14 +50,12 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        managmentCart = ManagmentCart(this)
         repository = MainRepository(this)
         tokenManager = TokenManager(this)
 
         if (tokenManager.isTokenExpired()) {
             Toast.makeText(this, "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.", Toast.LENGTH_LONG).show()
             tokenManager.clearTokens()
-
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -60,27 +63,129 @@ class DetailActivity : AppCompatActivity() {
             return
         }
 
-        bundle()
+        item = intent.getSerializableExtra("object") as ItemModel
+
+        loadProductVariants()  // THAY ĐỔI: Load variants trước
         setBlurEffect()
-        initSizeList()
         initReviews()
         setupReviewForm()
-        setupReviewsToggle()  // THÊM DÒNG NÀY
+        setupReviewsToggle()
+        setupQuantityButtons()
     }
 
-    // THÊM HÀM MỚI
+    // HÀM MỚI: Load tất cả variants của sản phẩm
+    private fun loadProductVariants() {
+        repository.loadProductVariants(item.id).observe(this, Observer { variants ->
+            if (variants.isEmpty()) {
+                Toast.makeText(this, "Không thể tải thông tin sản phẩm", Toast.LENGTH_SHORT).show()
+                finish()
+                return@Observer
+            }
+
+            productVariants = variants
+
+            // Hiển thị thông tin chung (từ variant đầu tiên)
+            val firstVariant = variants.first()
+            binding.apply {
+                titleTxt.text = firstVariant.name
+                descriptionTxt.text = firstVariant.description
+                extraTxt.text = firstVariant.category
+
+                Glide.with(this@DetailActivity)
+                    .load(firstVariant.imageUrl)
+                    .into(picMain)
+            }
+
+            // Setup size list với các variants
+            initSizeList()
+        })
+    }
+
+    private fun initSizeList() {
+        val allPossibleSizes = listOf("S", "M", "L")
+        val availableSizes = productVariants.map { it.size.uppercase() }
+
+        binding.sizeList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.sizeList.adapter = SizeAdapter(
+            allPossibleSizes,
+            availableSizes
+        ) { size, isAvailable ->
+            if (isAvailable) {
+                // Tìm variant tương ứng với size đã chọn
+                selectedVariant = productVariants.find { it.size.uppercase() == size.uppercase() }
+                updatePriceForSelectedVariant()
+                binding.addToCartBtn.isEnabled = true
+                binding.addToCartBtn.alpha = 1.0f
+            } else {
+                selectedVariant = null
+                binding.priceTxt.text = "Size $size không có sẵn"
+                binding.priceTxt.setTextColor(Color.GRAY)
+                binding.addToCartBtn.isEnabled = false
+                binding.addToCartBtn.alpha = 0.5f
+                Toast.makeText(this, "Size $size hiện không có sẵn", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupQuantityButtons() {
+        binding.apply {
+            numberItemTxt.text = quantity.toString()
+
+            backBtn.setOnClickListener { finish() }
+
+            plusCart.setOnClickListener {
+                quantity++
+                numberItemTxt.text = quantity.toString()
+                updatePriceForSelectedVariant()
+            }
+
+            minusCart.setOnClickListener {
+                if (quantity > 1) {
+                    quantity--
+                    numberItemTxt.text = quantity.toString()
+                    updatePriceForSelectedVariant()
+                }
+            }
+
+            addToCartBtn.setOnClickListener { addToCart() }
+        }
+    }
+
+    private fun updatePriceForSelectedVariant() {
+        if (selectedVariant != null) {
+            val totalPrice = selectedVariant!!.price * quantity
+            binding.priceTxt.text = formatPrice(totalPrice)
+            binding.priceTxt.setTextColor(getColor(R.color.orange))
+        }
+    }
+
+    private fun addToCart() {
+        if (selectedVariant == null) {
+            Toast.makeText(this, "Vui lòng chọn kích cỡ", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Gửi ID của variant đã chọn (không phải ID sản phẩm gốc)
+        repository.addToCart(selectedVariant!!.id, quantity).observe(this, Observer { result ->
+            val (success, message) = result
+            if (success) {
+                Toast.makeText(this, "Đã thêm ${selectedVariant!!.size} vào giỏ hàng!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, message ?: "Thêm vào giỏ hàng thất bại", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    // ... CÁC HÀM REVIEW GIỮ NGUYÊN ...
+
     private fun setupReviewsToggle() {
         var isExpanded = false
-
         binding.reviewsHeaderLayout.setOnClickListener {
             isExpanded = !isExpanded
-
             if (isExpanded) {
-                // MỞ RỘNG
                 binding.reviewsContainer.visibility = View.VISIBLE
                 binding.imgExpandIcon.setImageResource(R.drawable.ic_expand_less)
             } else {
-                // THU GỌN
                 binding.reviewsContainer.visibility = View.GONE
                 binding.imgExpandIcon.setImageResource(R.drawable.ic_expand_more)
             }
@@ -88,14 +193,7 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setupReviewForm() {
-        val stars = listOf(
-            binding.star1,
-            binding.star2,
-            binding.star3,
-            binding.star4,
-            binding.star5
-        )
-
+        val stars = listOf(binding.star1, binding.star2, binding.star3, binding.star4, binding.star5)
         stars.forEachIndexed { index, star ->
             star.setOnClickListener {
                 selectedRating = index + 1
@@ -105,36 +203,26 @@ class DetailActivity : AppCompatActivity() {
 
         binding.submitReviewBtn.setOnClickListener {
             val comment = binding.reviewTextInput.text.toString().trim()
-
             if (selectedRating == 0) {
                 Toast.makeText(this, "Vui lòng chọn số sao đánh giá", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
             if (comment.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập nội dung bình luận", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // GỬI REVIEW
             repository.postReview(item.id, selectedRating, comment).observe(this, Observer { result ->
                 val (success, errorMessage) = result
                 if (success) {
                     Toast.makeText(this, "Gửi đánh giá thành công!", Toast.LENGTH_SHORT).show()
-
-                    // ẨN FORM, HIỂN THỊ THÔNG BÁO CẢM ƠN
                     binding.reviewFormCard.visibility = View.GONE
                     binding.thankYouCard.visibility = View.VISIBLE
                     hasUserReviewed = true
-
-                    initReviews()  // Refresh danh sách
+                    initReviews()
                 } else {
-                    // XỬ LÝ LỖI "ĐÃ ĐÁNH GIÁ RỒI"
-                    if (errorMessage?.contains("đã đánh giá") == true ||
-                        errorMessage?.contains("already reviewed") == true) {
+                    if (errorMessage?.contains("đã đánh giá") == true) {
                         Toast.makeText(this, "Bạn đã đánh giá sản phẩm này rồi", Toast.LENGTH_LONG).show()
-
-                        // ẨN FORM, HIỂN THỊ THÔNG BÁO
                         binding.reviewFormCard.visibility = View.GONE
                         binding.thankYouCard.visibility = View.VISIBLE
                         hasUserReviewed = true
@@ -154,14 +242,11 @@ class DetailActivity : AppCompatActivity() {
 
     private fun initReviews() {
         if (item.id == 0L) return
-
         val currentUserId = tokenManager.getUserId()
 
         repository.loadReviews(item.id).observe(this, Observer { reviews ->
-            // KIỂM TRA USER ĐÃ ĐÁNH GIÁ CHƯA
             hasUserReviewed = reviews.any { it.userId == currentUserId }
 
-            // ẨN/HIỆN FORM DựA VÀO hasUserReviewed
             if (hasUserReviewed) {
                 binding.reviewFormCard.visibility = View.GONE
                 binding.thankYouCard.visibility = View.VISIBLE
@@ -170,7 +255,6 @@ class DetailActivity : AppCompatActivity() {
                 binding.thankYouCard.visibility = View.GONE
             }
 
-            // CẬP NHẬT SỐ LƯỢNG REVIEW TRONG HEADER
             binding.txtReviewCount.text = "(${reviews.size})"
 
             if (reviews.isEmpty()) {
@@ -182,17 +266,15 @@ class DetailActivity : AppCompatActivity() {
                 binding.emptyReviewsLayout.visibility = View.GONE
                 binding.reviewsList.visibility = View.VISIBLE
                 binding.reviewsList.layoutManager = LinearLayoutManager(this)
-
                 binding.reviewsList.adapter = ReviewAdapter(
                     reviews.toMutableList(),
                     currentUserId,
-                    onEditClick = { review -> /* Không cần nữa */ },
+                    onEditClick = {},
                     onDeleteClick = { review -> handleDeleteReview(review) },
                     onSaveEdit = { review, newRating, newComment ->
                         handleSaveEdit(review, newRating, newComment)
                     }
                 )
-
                 calculateAverage(reviews)
             }
         })
@@ -219,12 +301,9 @@ class DetailActivity : AppCompatActivity() {
                     val (success, errorMessage) = result
                     if (success) {
                         Toast.makeText(this, "Xóa đánh giá thành công!", Toast.LENGTH_SHORT).show()
-
-                        // SAU KHI XÓA, HIỂN THỊ LẠI FORM
                         hasUserReviewed = false
                         binding.reviewFormCard.visibility = View.VISIBLE
                         binding.thankYouCard.visibility = View.GONE
-
                         initReviews()
                     } else {
                         Toast.makeText(this, errorMessage ?: "Xóa thất bại", Toast.LENGTH_LONG).show()
@@ -237,7 +316,6 @@ class DetailActivity : AppCompatActivity() {
 
     private fun calculateAverage(reviews: List<ReviewModel>) {
         if (reviews.isEmpty()) return
-
         val average = reviews.map { it.rating.toDouble() }.average()
         binding.ratingTxt.text = String.format("%.1f", average)
         binding.totalRatingCountTxt.text = "(${reviews.size} đánh giá)"
@@ -257,26 +335,6 @@ class DetailActivity : AppCompatActivity() {
 
     private fun Int.dpToPx(): Int = (this * resources.displayMetrics.density).toInt()
 
-    private fun initSizeList() {
-        val sizeList = ArrayList<String>()
-        sizeList.add("1")
-        sizeList.add("2")
-        sizeList.add("3")
-        sizeList.add("4")
-
-        binding.sizeList.adapter = SizeAdapter(sizeList)
-        binding.sizeList.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
-        val colorList = ArrayList<String>()
-        for (imageUrl in item.picUrl) {
-            colorList.add(imageUrl)
-        }
-        Glide.with(this)
-            .load(colorList[0])
-            .apply(RequestOptions.bitmapTransform(RoundedCorners(100)))
-            .into(binding.picMain)
-    }
-
     private fun setBlurEffect() {
         val radius = 10f
         val decorView = this.window.decorView
@@ -285,7 +343,6 @@ class DetailActivity : AppCompatActivity() {
         binding.blurView.setupWith(rootView, RenderScriptBlur(this))
             .setFrameClearDrawable(windowBackground)
             .setBlurRadius(radius)
-
         binding.blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND)
         binding.blurView.setClipToOutline(true)
     }
@@ -293,71 +350,5 @@ class DetailActivity : AppCompatActivity() {
     private fun formatPrice(price: Double): String {
         val formatter = NumberFormat.getNumberInstance(Locale("vi", "VN"))
         return "${formatter.format(price)}đ"
-    }
-
-    private fun updateTotalPrice() {
-        val totalPrice = item.price * item.numberInCart
-        binding.priceTxt.text = formatPrice(totalPrice)
-    }
-
-    private fun bundle() {
-        binding.apply {
-            item = intent.getSerializableExtra("object") as ItemModel
-
-            Glide.with(this@DetailActivity)
-                .load(item.picUrl[0])
-                .into(binding.picMain)
-
-            titleTxt.text = item.title
-            descriptionTxt.text = item.description
-
-            item.numberInCart = 1
-            numberItemTxt.text = item.numberInCart.toString()
-            updateTotalPrice()
-
-            extraTxt.text = item.extra
-
-            backBtn.setOnClickListener { finish() }
-
-            plusCart.setOnClickListener {
-                item.numberInCart++
-                numberItemTxt.text = item.numberInCart.toString()
-                updateTotalPrice()
-            }
-
-            minusCart.setOnClickListener {
-                if (item.numberInCart > 1) {
-                    item.numberInCart--
-                    numberItemTxt.text = item.numberInCart.toString()
-                    updateTotalPrice()
-                }
-            }
-
-            // THÊM XỬ LÝ NÚT MUA NGAY
-            addToCartBtn.setOnClickListener {
-                addToCart()
-            }
-        }
-    }
-
-    // THÊM HÀM MỚI
-    private fun addToCart() {
-        if (item.numberInCart <= 0) {
-            Toast.makeText(this, "Vui lòng chọn số lượng", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Gọi API thêm vào giỏ hàng
-        repository.addToCart(item.id, item.numberInCart).observe(this, Observer { result ->
-            val (success, message) = result
-            if (success) {
-                Toast.makeText(this, "Đã thêm vào giỏ hàng!", Toast.LENGTH_SHORT).show()
-                // Optional: Chuyển về màn hình giỏ hàng
-                // val intent = Intent(this, CartActivity::class.java)
-                // startActivity(intent)
-            } else {
-                Toast.makeText(this, message ?: "Thêm vào giỏ hàng thất bại", Toast.LENGTH_LONG).show()
-            }
-        })
     }
 }

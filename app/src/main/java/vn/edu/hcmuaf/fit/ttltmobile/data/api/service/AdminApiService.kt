@@ -81,4 +81,16 @@ interface AdminApiService {
         @Query("startDate") startDate: String? = null,
         @Query("endDate") endDate: String? = null
     ): Call<UserStatisticsResponse>
+
+    // ===== REVIEW MANAGEMENT =====
+
+    @GET("admin/reviews")
+    fun getAllReviews(
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): Call<PageResponse<AdminReviewResponse>>
+
+    @DELETE("admin/reviews/{id}")
+    fun deleteReview(@Path("id") reviewId: Long): Call<Map<String, String>>
+
 }
