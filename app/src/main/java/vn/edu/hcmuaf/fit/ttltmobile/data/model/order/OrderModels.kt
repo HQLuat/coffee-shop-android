@@ -39,7 +39,16 @@ enum class OrderStatus {
     CANCELLED,
 
     @SerializedName("REFUNDED")
-    REFUNDED;
+    REFUNDED,
+
+    @SerializedName("REFUND_PENDING")
+    REFUND_PENDING,
+
+    @SerializedName("REFUND_PROCESSING")
+    REFUND_PROCESSING,
+
+    @SerializedName("REFUND_FAILED")
+    REFUND_FAILED;
 
     fun getDisplayName(): String {
         return when (this) {
@@ -50,7 +59,25 @@ enum class OrderStatus {
             DELIVERED -> "Hoàn thành"
             CANCELLED -> "Đã hủy"
             REFUNDED -> "Đã hoàn tiền"
+            REFUND_PENDING -> "Chờ hoàn tiền"
+            REFUND_PROCESSING -> "Đang xử lý hoàn tiền"
+            REFUND_FAILED -> "Hoàn tiền thất bại"
         }
+    }
+
+    fun isRefundStatus(): Boolean {
+        return this == REFUND_PENDING ||
+                this == REFUND_PROCESSING ||
+                this == REFUNDED ||
+                this == REFUND_FAILED
+    }
+
+    fun isRefundInProgress(): Boolean {
+        return this == REFUND_PENDING || this == REFUND_PROCESSING
+    }
+
+    fun canRefund(): Boolean {
+        return this == DELIVERED
     }
 }
 
@@ -105,9 +132,16 @@ data class OrderResponse(
     fun canCancel(): Boolean = status == OrderStatus.PENDING
 
     // Helper để check đã thanh toán chưa
-    fun isPaid(): Boolean = status != OrderStatus.PENDING &&
-            status != OrderStatus.CANCELLED &&
-            status != OrderStatus.REFUNDED
+    fun isPaid(): Boolean {
+        return when (status) {
+            OrderStatus.PENDING, OrderStatus.CANCELLED -> false
+            OrderStatus.REFUND_PENDING,
+            OrderStatus.REFUND_PROCESSING,
+            OrderStatus.REFUND_FAILED,
+            OrderStatus.REFUNDED -> true
+            else -> true
+        }
+    }
 
     // Helper để check có thể refund không
     fun canRefund(): Boolean =

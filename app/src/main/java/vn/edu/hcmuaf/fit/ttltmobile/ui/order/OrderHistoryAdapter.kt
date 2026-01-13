@@ -60,8 +60,24 @@ class OrderHistoryAdapter(
                 OrderStatus.DELIVERED -> R.color.holo_green_dark
                 OrderStatus.CANCELLED -> R.color.holo_red_dark
                 OrderStatus.REFUNDED -> R.color.holo_orange_light
+                OrderStatus.REFUND_PENDING -> R.color.holo_orange_light
+                OrderStatus.REFUND_PROCESSING -> R.color.holo_orange_dark
+                OrderStatus.REFUND_FAILED -> R.color.holo_red_dark
             }
             tvOrderStatus.setTextColor(holder.itemView.context.getColor(statusColor))
+            try {
+                when (order.status) {
+                    OrderStatus.REFUNDED -> "Đã hoàn tiền"
+                    OrderStatus.REFUND_PENDING -> "Chờ hoàn tiền"
+                    OrderStatus.REFUND_PROCESSING -> "Đang hoàn tiền"
+                    OrderStatus.REFUND_FAILED -> "Hoàn tiền thất bại"
+                    OrderStatus.PENDING -> "Chưa thanh toán"
+                    OrderStatus.CANCELLED -> "Đã hủy"
+                    else -> "Đã thanh toán"
+                }
+            } catch (e: Exception) {
+            }
+
         }
     }
 
@@ -74,6 +90,9 @@ class OrderHistoryAdapter(
             OrderStatus.DELIVERED -> "Hoàn thành"
             OrderStatus.CANCELLED -> "Đã hủy"
             OrderStatus.REFUNDED -> "Đã hoàn tiền"
+            OrderStatus.REFUND_PENDING -> "Chờ hoàn tiền"
+            OrderStatus.REFUND_PROCESSING -> "Đang hoàn tiền"
+            OrderStatus.REFUND_FAILED -> "Hoàn tiền thất bại"
         }
     }
 

@@ -15,7 +15,6 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.model.order.OrderStatus
 import vn.edu.hcmuaf.fit.ttltmobile.ui.order.OrderDetailActivity
 
 class AdminOrdersActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityAdminOrdersBinding
     private lateinit var viewModel: AdminOrderViewModel
     private lateinit var orderAdapter: AdminOrderAdapter
@@ -77,8 +76,7 @@ class AdminOrdersActivity : AppCompatActivity() {
 
         // Filter button
         binding.btnFilter.setOnClickListener {
-            // TODO: Show filter dialog
-            Toast.makeText(this, "Filter coming soon", Toast.LENGTH_SHORT).show()
+            showFilterDialog()
         }
 
         // Status chips
@@ -101,6 +99,42 @@ class AdminOrdersActivity : AppCompatActivity() {
 
             viewModel.loadOrdersByStatus(status)
         }
+    }
+
+    private fun showFilterDialog() {
+        val filters = arrayOf(
+            "Tất cả",
+            "Chờ xử lý",
+            "Đã xác nhận",
+            "Đang chuẩn bị",
+            "Đang giao",
+            "Đã giao",
+            "Đã hủy",
+            "Đã hoàn tiền",
+            "Chờ hoàn tiền",
+            "Đang hoàn tiền"
+        )
+
+        AlertDialog.Builder(this)
+            .setTitle("Lọc theo trạng thái")
+            .setItems(filters) { dialog, which ->
+                val status = when (which) {
+                    0 -> null
+                    1 -> OrderStatus.PENDING
+                    2 -> OrderStatus.CONFIRMED
+                    3 -> OrderStatus.PREPARING
+                    4 -> OrderStatus.SHIPPING
+                    5 -> OrderStatus.DELIVERED
+                    6 -> OrderStatus.CANCELLED
+                    7 -> OrderStatus.REFUNDED
+                    8 -> OrderStatus.REFUND_PENDING
+                    9 -> OrderStatus.REFUND_PROCESSING
+                    else -> null
+                }
+                viewModel.loadOrdersByStatus(status)
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun observeViewModel() {
@@ -190,7 +224,10 @@ class AdminOrdersActivity : AppCompatActivity() {
             OrderStatus.SHIPPING -> "Đang giao"
             OrderStatus.DELIVERED -> "Đã giao"
             OrderStatus.CANCELLED -> "Đã hủy"
-            OrderStatus.REFUNDED -> TODO()
+            OrderStatus.REFUNDED -> "Đã hoàn tiền"
+            OrderStatus.REFUND_PENDING -> "Chờ hoàn tiền"
+            OrderStatus.REFUND_PROCESSING -> "Đang hoàn tiền"
+            OrderStatus.REFUND_FAILED -> "Hoàn tiền thất bại"
         }
     }
 

@@ -35,10 +35,7 @@ class AdminOrderAdapter(
 
         with(holder.binding) {
             tvOrderCode.text = order.orderCode
-
-            // FIXED: Handle null userEmail
             tvCustomerEmail.text = order.getDisplayEmail()
-
             tvOrderDate.text = formatDate(order.createdAt)
             tvOrderAmount.text = order.getTotalFormatted()
             tvItemCount.text = "${order.items.size} sản phẩm"
@@ -47,28 +44,33 @@ class AdminOrderAdapter(
             tvOrderStatus.text = order.statusDisplay ?: getStatusText(order.status)
             tvOrderStatus.setTextColor(holder.itemView.context.getColor(getStatusColor(order.status)))
 
-            // Payment status - FIXED: Use helper method
-            val isPaid = order.isPaid()
-            tvPaymentStatus.text = if (isPaid) "Đã thanh toán" else "Chưa thanh toán"
-            tvPaymentStatus.setTextColor(
-                holder.itemView.context.getColor(
-                    if (isPaid) android.R.color.holo_green_dark
-                    else android.R.color.holo_red_dark
-                )
-            )
+            // Payment status
+            val paymentStatusText = when (order.status) {
+                OrderStatus.REFUNDED -> "Đã hoàn tiền"
+                OrderStatus.REFUND_PENDING -> "Chờ hoàn tiền"
+                OrderStatus.REFUND_PROCESSING -> "Đang hoàn tiền"
+                OrderStatus.REFUND_FAILED -> "Hoàn tiền thất bại"
+                OrderStatus.PENDING -> "Chưa thanh toán"
+                OrderStatus.CANCELLED -> "Đã hủy"
+                else -> "Đã thanh toán"
+            }
+            tvPaymentStatus.text = paymentStatusText
+
+            val paymentColor = when (order.status) {
+                OrderStatus.REFUNDED -> android.R.color.holo_green_light
+                OrderStatus.REFUND_PENDING,
+                OrderStatus.REFUND_PROCESSING -> android.R.color.holo_orange_dark
+                OrderStatus.REFUND_FAILED -> android.R.color.holo_red_dark
+                OrderStatus.PENDING -> android.R.color.holo_red_dark
+                OrderStatus.CANCELLED -> android.R.color.darker_gray
+                else -> android.R.color.holo_green_dark
+            }
+            tvPaymentStatus.setTextColor(holder.itemView.context.getColor(paymentColor))
 
             // Click listeners
-            root.setOnClickListener {
-                onOrderClick(order)
-            }
-
-            btnUpdateStatus.setOnClickListener {
-                onUpdateStatus(order)
-            }
-
-            btnDelete.setOnClickListener {
-                onDeleteOrder(order)
-            }
+            root.setOnClickListener { onOrderClick(order) }
+            btnUpdateStatus.setOnClickListener { onUpdateStatus(order) }
+            btnDelete.setOnClickListener { onDeleteOrder(order) }
         }
     }
 
@@ -80,7 +82,10 @@ class AdminOrderAdapter(
             OrderStatus.SHIPPING -> "Đang giao"
             OrderStatus.DELIVERED -> "Đã giao"
             OrderStatus.CANCELLED -> "Đã hủy"
-            OrderStatus.REFUNDED -> TODO()
+            OrderStatus.REFUNDED -> "Đã hoàn tiền"
+            OrderStatus.REFUND_PENDING -> "Chờ hoàn tiền"
+            OrderStatus.REFUND_PROCESSING -> "Đang hoàn tiền"
+            OrderStatus.REFUND_FAILED -> "Hoàn tiền thất bại"
         }
     }
 
@@ -92,7 +97,10 @@ class AdminOrderAdapter(
             OrderStatus.SHIPPING -> R.color.teal
             OrderStatus.DELIVERED -> R.color.green
             OrderStatus.CANCELLED -> android.R.color.holo_red_dark
-            OrderStatus.REFUNDED -> TODO()
+            OrderStatus.REFUNDED -> android.R.color.holo_green_light
+            OrderStatus.REFUND_PENDING -> R.color.orange
+            OrderStatus.REFUND_PROCESSING -> R.color.purple
+            OrderStatus.REFUND_FAILED -> android.R.color.holo_red_dark
         }
     }
 
