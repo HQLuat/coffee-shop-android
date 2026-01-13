@@ -69,6 +69,11 @@
         <activity
             android:name=".ui.home.MainActivity"
             android:exported="false" />
+        <activity android:name=".ui.admin.AdminProductActivity" />
+        <activity android:name=".ui.admin.AdminProductFormActivity" />
+        <activity
+            android:name=".ui.admin.AdminProductDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.checkout.CheckoutActivity"
             android:exported="false"

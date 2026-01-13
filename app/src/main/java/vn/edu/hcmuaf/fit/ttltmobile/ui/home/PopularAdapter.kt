@@ -12,7 +12,7 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 
 class PopularAdapter(val items: MutableList<ItemModel>):
     RecyclerView.Adapter<PopularAdapter.Viewholder>() {
-        lateinit var context: Context
+    lateinit var context: Context
 
     class Viewholder (val binding: ViewholderPopularBinding):
         RecyclerView.ViewHolder(binding.root)

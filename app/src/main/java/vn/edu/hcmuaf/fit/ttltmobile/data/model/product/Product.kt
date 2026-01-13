@@ -4,12 +4,11 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class Product(
-    val id: Long,
+    val id: Long = 0,
     val name: String,
     val price: Double,
     @SerializedName("imageUrl") val imageUrl: String,
-    val category: String? = null,
-    val description: String? = null,
-    val size: String,        // THÊM DÒNG NÀY
-    val rating: Double = 0.0 // THÊM DÒNG NÀY
+    val category: String,
+    val size: String,
+    val description: String? = null
 ) : Serializable
