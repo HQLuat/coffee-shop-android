@@ -1,5 +1,6 @@
 package vn.edu.hcmuaf.fit.ttltmobile.ui.cart
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import vn.edu.hcmuaf.fit.ttltmobile.databinding.FragmentCartBinding
+import vn.edu.hcmuaf.fit.ttltmobile.ui.checkout.CheckoutActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseFragment
 
 class CartFragment: BaseFragment<FragmentCartBinding>() {
@@ -41,7 +43,13 @@ class CartFragment: BaseFragment<FragmentCartBinding>() {
     private fun setupListeners(){
         binding.apply {
             checkOutBtn.setOnClickListener{
-                showToast("chức năng đang phát triển")
+                // Navigate to checkout
+                if (viewModel.cartData.value?.items?.isNotEmpty() == true) {
+                    val intent = Intent(requireContext(), CheckoutActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    showToast("Giỏ hàng trống")
+                }
             }
         }
     }
@@ -136,5 +144,10 @@ class CartFragment: BaseFragment<FragmentCartBinding>() {
             listView.visibility = View.VISIBLE
             checkOutBtn.isEnabled = true
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        // Reload cart when returning to fragment
+        viewModel.loadCart()
     }
 }

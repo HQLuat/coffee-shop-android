@@ -17,6 +17,7 @@ import vn.edu.hcmuaf.fit.ttltmobile.databinding.ActivityAdminDashboardBinding
 import vn.edu.hcmuaf.fit.ttltmobile.ui.auth.LoginActivity
 import vn.edu.hcmuaf.fit.ttltmobile.utils.base.BaseActivity
 import vn.edu.hcmuaf.fit.ttltmobile.ui.admin.AdminUserManagementActivity
+import vn.edu.hcmuaf.fit.ttltmobile.ui.admin.orders.AdminOrdersActivity
 
 class AdminDashboardActivity : BaseActivity<ActivityAdminDashboardBinding>() {
 
@@ -151,7 +152,8 @@ class AdminDashboardActivity : BaseActivity<ActivityAdminDashboardBinding>() {
     }
 
     private fun navigateToOrderManagement() {
-        showToast("Chức năng Quản lý đơn hàng đang phát triển")
+        val intent = Intent(this, AdminOrdersActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToUserManagement() {
@@ -168,6 +170,7 @@ class AdminDashboardActivity : BaseActivity<ActivityAdminDashboardBinding>() {
     }
 
     private fun navigateToReviewManagement() {
-        showToast("Chức năng Quản lý đánh giá đang phát triển")
+        val intent = Intent(this, AdminReviewManagementActivity::class.java)
+        startActivity(intent)
     }
 }

@@ -10,5 +10,6 @@ data class ItemModel(
     var rating: Double = 0.0,
     var extra: String = "",  // e.g., category or extra info
     var picUrl: MutableList<String> = mutableListOf(),
+    var size: MutableList<String>? = mutableListOf(),
     var numberInCart: Int = 0
 ) : Serializable

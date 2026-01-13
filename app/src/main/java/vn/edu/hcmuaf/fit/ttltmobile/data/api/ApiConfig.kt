@@ -11,6 +11,10 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AdminProductApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartApiService
 import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.ProductApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AdminOrderApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AuthApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.CartApiService
+import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.OrderApiService
 import java.util.concurrent.TimeUnit
 
 object ApiConfig {
@@ -62,6 +66,11 @@ object ApiConfig {
         return getRetrofit(context).create(AuthApiService::class.java)
     }
 
+    // Order Service
+    fun getOrderService(context: Context): OrderApiService {
+        return getRetrofit(context).create(OrderApiService::class.java)
+    }
+
     // Cart Service
     fun getCartService(context: Context): CartApiService {
         return getRetrofit(context).create(CartApiService::class.java)
@@ -75,5 +84,8 @@ object ApiConfig {
     // Admin Product Service
     fun getAdminProductService(context: Context): AdminProductApiService {
         return createService(AdminProductApiService::class.java, context)
+    // Admin Order Service
+    fun getAdminOrderService(context: Context): AdminOrderApiService {
+        return getRetrofit(context).create(AdminOrderApiService::class.java)
     }
 }
