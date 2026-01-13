@@ -136,23 +136,31 @@ class OrderDetailActivity : AppCompatActivity() {
             OrderStatus.PREPARING -> "Đang chuẩn bị"
             OrderStatus.SHIPPING -> "Đang giao"
             OrderStatus.DELIVERED -> "Hoàn thành"
-            OrderStatus.REFUNDED -> "Đã hoàn tiền"
             OrderStatus.CANCELLED -> "Đã hủy"
+            OrderStatus.REFUNDED -> "Đã hoàn tiền"
+            OrderStatus.REFUND_PENDING -> "Chờ hoàn tiền"
+            OrderStatus.REFUND_PROCESSING -> "Đang xử lý hoàn tiền"
+            OrderStatus.REFUND_FAILED -> "Hoàn tiền thất bại"
         }
         binding.tvOrderStatus.text = "Trạng thái: $statusText"
 
         val isPaid = order.isPaid()
-        val paymentStatusText = when {
-            order.status == OrderStatus.REFUNDED -> "Đã hoàn tiền"
-            isPaid -> "Đã thanh toán"
-            else -> "Chưa thanh toán"
+        val paymentStatusText = when (order.status) {
+            OrderStatus.REFUNDED -> "Đã hoàn tiền"
+            OrderStatus.REFUND_PENDING -> "Chờ hoàn tiền"
+            OrderStatus.REFUND_PROCESSING -> "Đang hoàn tiền"
+            OrderStatus.REFUND_FAILED -> "Hoàn tiền thất bại"
+            else -> if (isPaid) "Đã thanh toán" else "Chưa thanh toán"
         }
         binding.tvPaymentStatus.text = paymentStatusText
 
-        val paymentColor = when {
-            order.status == OrderStatus.REFUNDED -> android.R.color.holo_orange_dark
-            isPaid -> android.R.color.holo_green_dark
-            else -> android.R.color.holo_red_dark
+        val paymentColor = when (order.status) {
+            OrderStatus.REFUNDED -> android.R.color.holo_green_light
+            OrderStatus.REFUND_PENDING -> android.R.color.holo_orange_light
+            OrderStatus.REFUND_PROCESSING -> android.R.color.holo_orange_dark
+            OrderStatus.REFUND_FAILED -> android.R.color.holo_red_dark
+            else -> if (isPaid) android.R.color.holo_green_dark
+            else android.R.color.holo_red_dark
         }
         binding.tvPaymentStatus.setTextColor(getColor(paymentColor))
 
@@ -181,7 +189,8 @@ class OrderDetailActivity : AppCompatActivity() {
         val showPayNow = !order.isPaid() && order.status == OrderStatus.PENDING
         binding.btnPayNow.visibility = if (showPayNow) View.VISIBLE else View.GONE
 
-        val showRefund = order.canRefund()
+        val showRefund = order.status == OrderStatus.DELIVERED &&
+                order.paymentMethod == vn.edu.hcmuaf.fit.ttltmobile.data.model.order.PaymentMethod.ZALO_PAY
         binding.btnRefund.visibility = if (showRefund) View.VISIBLE else View.GONE
     }
 
