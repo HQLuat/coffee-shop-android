@@ -25,8 +25,8 @@ data class CartItemResponse(
     val subtotal: BigDecimal
 ) {
 
-    fun getPriceFormatted(): String = "₫${String.format("%,d", price.toLong())}"
-    fun getSubtotalFormatted(): String = "₫${String.format("%,d", subtotal.toLong())}"
+    fun getPriceFormatted(): String = "${String.format("%,d", price.toLong())}₫"
+    fun getSubtotalFormatted(): String = "${String.format("%,d", subtotal.toLong())}₫"
 }
 
 
@@ -37,7 +37,7 @@ data class CartResponse(
     val totalItems: Int,
     val message: String?
 ) {
-    fun getTotalFormatted(): String = "₫${String.format("%,d", totalAmount.toLong())}"
+    fun getTotalFormatted(): String = "${String.format("%,d", totalAmount.toLong())}₫"
 
     fun isEmpty(): Boolean = items.isEmpty()
 }
