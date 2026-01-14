@@ -31,6 +31,7 @@ class CartAdapter(
 
         with(holder.binding) {
             titleTxt.text = item.productName
+            sizeTxt.text = "Size : " + item.size
             feeEachitem.text = item.getPriceFormatted()
             numberItemTxt.text = item.quantity.toString()
             totalEachItem.text = item.getSubtotalFormatted()

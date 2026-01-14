@@ -53,17 +53,30 @@
             android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@+id/picCart"
             app:layout_constraintTop_toTopOf="@+id/picCart" />
+        <!-- Thêm chỗ chứa size -->
+        <TextView
+            android:id="@+id/sizeTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Size M"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            app:layout_constraintStart_toEndOf="@+id/picCart"
+            app:layout_constraintTop_toBottomOf="@+id/titleTxt" />
 
         <TextView
             android:id="@+id/feeEachitem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="9dp"
             android:text="@string/_0"
             android:textColor="@color/white"
-            android:textSize="12sp"
+            android:textSize="13sp"
             app:layout_constraintBottom_toTopOf="@+id/minusEachItem"
             app:layout_constraintStart_toStartOf="@+id/titleTxt"
-            app:layout_constraintTop_toBottomOf="@+id/titleTxt" />
+            app:layout_constraintTop_toBottomOf="@+id/titleTxt"
+            app:layout_constraintVertical_bias="0.625" />
 
         <TextView
             android:id="@+id/minusEachItem"
