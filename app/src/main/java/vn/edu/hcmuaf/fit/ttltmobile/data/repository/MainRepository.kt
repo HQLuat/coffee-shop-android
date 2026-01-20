@@ -12,7 +12,7 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.api.service.ReviewRequestBody
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.ReviewModel
 import vn.edu.hcmuaf.fit.ttltmobile.data.model.product.Product
-
+import vn.edu.hcmuaf.fit.ttltmobile.data.model.product.ProductConstants.getCategoryLabel
 class MainRepository(private val context: Context) {
     private val apiService = ApiConfig.createService(ProductApiService::class.java, context)
 
@@ -36,27 +36,6 @@ class MainRepository(private val context: Context) {
         return result
     }
 
-    // 2. Load Special: Lấy toàn bộ -> Xử lý sạch -> Xáo trộn ngẫu nhiên
-    fun loadSpecial(): LiveData<MutableList<ItemModel>> {
-        val result = MutableLiveData<MutableList<ItemModel>>()
-        apiService.getProducts().enqueue(object : Callback<List<Product>> {
-            override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
-                if (response.isSuccessful) {
-                    val allProducts = response.body() ?: emptyList()
-                    processProducts(allProducts) { cleanedItems ->
-                        cleanedItems.shuffle() // Ngẫu nhiên cho Special
-                        result.value = cleanedItems
-                    }
-                }
-            }
-            override fun onFailure(call: Call<List<Product>>, t: Throwable) {
-                result.value = mutableListOf()
-            }
-        })
-        return result
-    }
-
-    // 3. Load By Category: Lọc Category -> Xử lý sạch (Gộp tên + Rating)
     fun loadByCategory(categoryEnum: String): LiveData<MutableList<ItemModel>> {
         val result = MutableLiveData<MutableList<ItemModel>>()
         apiService.getProducts().enqueue(object : Callback<List<Product>> {
@@ -64,14 +43,11 @@ class MainRepository(private val context: Context) {
                 if (response.isSuccessful) {
                     val allProducts = response.body() ?: emptyList()
 
-                    // KIỂM TRA ĐIỀU KIỆN "ALL"
                     if (categoryEnum.trim().uppercase() == "ALL") {
-                        // Nếu là ALL, không cần filter, xử lý sạch toàn bộ và trả về
                         processProducts(allProducts) { cleanedItems ->
                             result.value = cleanedItems
                         }
                     } else {
-                        // Nếu có Category cụ thể (COFFEE, TEA...), tiến hành lọc như cũ
                         val filtered = allProducts.filter {
                             it.category?.trim()?.uppercase() == categoryEnum.trim().uppercase()
                         }
@@ -92,24 +68,17 @@ class MainRepository(private val context: Context) {
         rawProducts: List<Product>,
         onComplete: (MutableList<ItemModel>) -> Unit
     ) {
-        // 1. Lọc sạch và gộp tên (Size S, M, L thành 1)
         val uniqueProducts = rawProducts.filter { it.name != null }
             .distinctBy { it.name?.trim()?.lowercase() }
 
         val items = mapProductToItem(uniqueProducts)
 
-        // 2. CHỐT: Trả về kết quả ngay lập tức
         onComplete(items)
-
-        // CHỈ LOAD REVIEW Ở DetailActivity (Trang chi tiết)
-        // để tránh quá tải cho trang danh sách.
     }
 
-    // THÊM HÀM MỚI - ADD TO CART
     fun addToCart(productId: Long, quantity: Int): LiveData<Pair<Boolean, String?>> {
         val result = MutableLiveData<Pair<Boolean, String?>>()
 
-        // Tạo request body với data class
         val requestBody = vn.edu.hcmuaf.fit.ttltmobile.data.api.service.AddToCartRequestBody(
             productId = productId,
             quantity = quantity
@@ -249,10 +218,8 @@ class MainRepository(private val context: Context) {
                 title = p.name ?: "Unknown"
                 price = p.price ?: 0.0
                 description = p.description ?: ""
-                extra = vn.edu.hcmuaf.fit.ttltmobile.data.model.product.ProductConstants.getCategoryLabel(p.category)
+                extra = getCategoryLabel(p.category)
 
-                // GIẢI PHÁP: Nếu Product không có rating, gán tạm 5.0 hoặc 0.0
-                // ItemModel của bạn có rating nên dòng này sẽ không lỗi
                 rating = 0.0
 
                 picUrl.clear()

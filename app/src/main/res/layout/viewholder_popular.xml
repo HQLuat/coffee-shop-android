@@ -42,12 +42,12 @@
         android:textColor="@color/white"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@id/priceTxt"
-        app:layout_constraintEnd_toStartOf="@id/imageView3"
+        app:layout_constraintEnd_toStartOf="@id/addCartBtn"
         app:layout_constraintStart_toStartOf="@id/titleTxt"
         app:layout_constraintTop_toBottomOf="@id/titleTxt" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/addCartBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

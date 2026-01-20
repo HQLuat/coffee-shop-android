@@ -29,6 +29,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
             val intent = Intent(requireContext(), ItemListActivity::class.java)
             intent.putExtra("title", "Popular Coffees")
             intent.putExtra("enum", "ALL")
+            startActivity(intent)
         }
 
         binding.seeAllSpecial.setOnClickListener {
