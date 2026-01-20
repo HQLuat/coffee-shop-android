@@ -176,7 +176,9 @@ class OrderDetailActivity : AppCompatActivity() {
 
         orderItemsAdapter.submitList(order.items)
 
-        binding.tvItemsTotal.text = order.getTotalFormatted()
+        binding.tvSubtotal.text = order.getSubtotalFormatted()
+        binding.tvTax.text = order.getTaxFormatted()
+        binding.tvDeliveryFee.text = order.getDeliveryFeeFormatted()
         binding.tvTotalAmount.text = order.getTotalFormatted()
 
         updateButtonsVisibility(order)

@@ -204,8 +204,8 @@ class CheckoutViewModel(application: Application) : AndroidViewModel(application
         }
 
         val request = CreateOrderRequest(
-            items = cartItems,  // ← QUAN TRỌNG: Phải có items!
-            paymentMethod = paymentMethodEnum,  // ← Dùng enum
+            items = cartItems,
+            paymentMethod = paymentMethodEnum,
             deliveryAddress = address,
             phoneNumber = phone,
             note = note

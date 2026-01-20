@@ -122,12 +122,18 @@ data class OrderResponse(
     val shippingAt: String?,
     val deliveredAt: String?,
     val items: List<OrderItemResponse>,
-
+    val subtotal: BigDecimal? = null,
+    val tax: BigDecimal? = null,
+    val deliveryFee: BigDecimal? = null,
     // OPTIONAL fields for admin (server may not always include)
     val userId: Long? = null,
     val userEmail: String? = null
 ) {
     fun getTotalFormatted(): String = "₫${String.format("%,d", totalAmount.toLong())}"
+
+    fun getSubtotalFormatted(): String = "₫${String.format("%,d", (subtotal ?: BigDecimal.ZERO).toLong())}"
+    fun getTaxFormatted(): String = "₫${String.format("%,d", (tax ?: BigDecimal.ZERO).toLong())}"
+    fun getDeliveryFeeFormatted(): String = "₫${String.format("%,d", (deliveryFee ?: BigDecimal.ZERO).toLong())}"
 
     fun canCancel(): Boolean = status == OrderStatus.PENDING
 
