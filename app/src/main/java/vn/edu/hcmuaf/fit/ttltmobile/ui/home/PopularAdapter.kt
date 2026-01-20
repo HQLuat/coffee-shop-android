@@ -31,7 +31,7 @@ class PopularAdapter(private val items: MutableList<ItemModel>) :
         holder.binding.apply {
             titleTxt.text = item.title
             extraTxt.text = item.extra
-            priceTxt.text = "$${item.price}"
+            priceTxt.text = "${item.price} ₫"
 
             Glide.with(context)
                 .load(item.picUrl[0])

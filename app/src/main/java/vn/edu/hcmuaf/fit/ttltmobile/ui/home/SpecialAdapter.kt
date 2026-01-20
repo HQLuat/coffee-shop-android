@@ -11,17 +11,10 @@ import vn.edu.hcmuaf.fit.ttltmobile.data.model.ItemModel
 
 class SpecialAdapter(private val items: MutableList<ItemModel>) :
     RecyclerView.Adapter<SpecialAdapter.Viewholder>() {
-
-    // Khối init chạy ngay khi Adapter được tạo
-    init {
-        items.shuffle() // Xáo trộn danh sách ngẫu nhiên ngay từ đầu
-    }
-
     class Viewholder(val binding: ViewholderSpecialBinding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Viewholder {
-        // Lấy context trực tiếp từ parent để an toàn hơn lateinit
         val binding = ViewholderSpecialBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
@@ -36,8 +29,8 @@ class SpecialAdapter(private val items: MutableList<ItemModel>) :
 
         holder.binding.apply {
             titleTxt.text = item.title
-            priceTxt.text = "$${item.price}"
-            ratingBar.rating = item.rating.toFloat()
+            priceTxt.text = "${item.price} ₫"
+            extraTxt.text = item.extra
 
             Glide.with(context)
                 .load(item.picUrl[0])

@@ -26,7 +26,7 @@ class CategoryAdapter(private val items: Array<String>) :
     }
 
     override fun onBindViewHolder(holder: Viewholder, position: Int) {
-        val label = items[position] // Đây là "Cà phê", "Trà"...
+        val label = items[position]
 
         holder.binding.titleCat.text = label
 
@@ -41,7 +41,6 @@ class CategoryAdapter(private val items: Array<String>) :
                 Handler(Looper.getMainLooper()).postDelayed({
                     val context = holder.itemView.context
                     val intent = Intent(context, ItemListActivity::class.java).apply {
-                        // Lấy Label gửi đi để hiện tiêu đề, lấy Enum để lọc DB
                         val selectedLabel = items[currentPos]
                         val selectedEnum = ProductConstants.getCategoryEnum(selectedLabel)
 

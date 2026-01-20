@@ -14,7 +14,6 @@ class ItemListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityItemListBinding
     private lateinit var viewModel: MainViewModel
 
-    // Đổi 'id' thành 'categoryEnum' cho đúng bản chất dữ liệu
     private var categoryEnum: String = ""
     private var title: String = ""
 
@@ -32,7 +31,6 @@ class ItemListActivity : AppCompatActivity() {
     }
 
     private fun getBundle() {
-        // Lấy 'enum' (ví dụ: COFFEE) mà CategoryAdapter đã truyền qua
         categoryEnum = intent.getStringExtra("enum") ?: ""
         title = intent.getStringExtra("title") ?: "Sản phẩm"
 
@@ -43,7 +41,6 @@ class ItemListActivity : AppCompatActivity() {
         binding.apply {
             progressBar.visibility = View.VISIBLE
 
-            // GỌI HÀM NÀY ĐỂ LỌC THEO CATEGORY
             viewModel.getByCategory(categoryEnum).observe(this@ItemListActivity) { items ->
                 progressBar.visibility = View.GONE
                 if (items != null) {
